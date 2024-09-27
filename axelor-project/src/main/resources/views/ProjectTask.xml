@@ -205,7 +205,7 @@
         <field name="isPrivateNote" widget="boolean-switch"
           onChange="action-comment-attrs-is-private-note-on-change"/>
         <field name="commentFileList" title="Files" colSpan="12">
-          <editor>
+          <editor x-viewer="true">
             <field name="attachmentFile" showTitle="false" widget="binary-link"/>
             <field name="description" showTitle="false" widget="string"/>
           </editor>

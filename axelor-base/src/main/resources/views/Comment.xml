@@ -63,6 +63,12 @@
         colSpan="12"/>
       <field name="isPrivateNote" widget="boolean-switch"
         onChange="action-comment-attrs-is-private-note-on-change" showIf="!$readonly()"/>
+      <field name="commentFileList" title="Files" colSpan="12" hideIf="id">
+        <editor x-viewer="true">
+          <field name="attachmentFile" showTitle="false" widget="binary-link"/>
+          <field name="description" showTitle="false" widget="string"/>
+        </editor>
+      </field>
     </panel>
 
   </form>

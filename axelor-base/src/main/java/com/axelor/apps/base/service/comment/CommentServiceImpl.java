@@ -53,24 +53,27 @@ public class CommentServiceImpl implements CommentService {
     List<CommentFile> commentFileList = comment.getCommentFileList();
     MailMessage mailMessage = comment.getMailMessage();
 
-    if (CollectionUtils.isEmpty(commentFileList)
-        && mailMessage != null
-        && !StringUtils.isBlank(mailMessage.getBody())) {
+    if (CollectionUtils.isEmpty(commentFileList)) {
 
-      try {
-        JSONObject jsonObject = new JSONObject(mailMessage.getBody());
-        JSONArray jsonArray = jsonObject.optJSONArray("tracks");
+      if (mailMessage == null) {
+        commentRepo.remove(comment);
+        return;
+      } else if (!StringUtils.isBlank(mailMessage.getBody())) {
 
-        if (jsonArray != null && jsonArray.length() == 1) {
-          JSONObject track = jsonArray.getJSONObject(0);
+        try {
+          JSONObject jsonObject = new JSONObject(mailMessage.getBody());
+          JSONArray jsonArray = jsonObject.optJSONArray("tracks");
 
-          if ("comment.note".equals(track.getString("title"))) {
-            commentRepo.remove(comment);
-            return;
+          if (jsonArray != null && jsonArray.length() == 1) {
+            JSONObject track = jsonArray.getJSONObject(0);
+            if ("comment.note".equals(track.getString("title"))) {
+              commentRepo.remove(comment);
+              return;
+            }
           }
+        } catch (JSONException e) {
+          TraceBackService.trace(e);
         }
-      } catch (JSONException e) {
-        TraceBackService.trace(e);
       }
     }
 
