@@ -9,8 +9,8 @@
 
     <string name="name" title="Name"/>
     <many-to-one name="project" ref="com.axelor.apps.project.db.Project" title="Project"/>
-    <many-to-one name="allocationPeriod"
-      ref="com.axelor.apps.project.db.AllocationPeriod" title="Allocation period"/>
+    <many-to-many name="allocationPeriodSet"
+      ref="com.axelor.apps.project.db.AllocationPeriod" title="Allocation periods"/>
     <string name="description" title="Description" large="true"/>
     <one-to-many name="projectTaskList" ref="com.axelor.apps.project.db.ProjectTask"
       title="Tasks" mappedBy="sprint" orphanRemoval="false"/>
