@@ -18,10 +18,10 @@
  */
 package com.axelor.apps.project.db.repo;
 
+import com.axelor.apps.project.db.AllocationLine;
 import com.axelor.apps.project.db.ProjectTask;
 import com.axelor.apps.project.db.Sprint;
-import com.axelor.apps.project.db.SprintAllocationLine;
-import com.axelor.apps.project.service.sprint.SprintAllocationLineService;
+import com.axelor.apps.project.service.sprint.AllocationLineService;
 import com.axelor.inject.Beans;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -46,16 +46,14 @@ public class SprintManagementRepository extends SprintRepository {
     BigDecimal totalAllocatedTime = BigDecimal.ZERO;
     BigDecimal totalEstimatedTime = BigDecimal.ZERO;
 
-    SprintAllocationLineService sprintAllocationLineService =
-        Beans.get(SprintAllocationLineService.class);
+    AllocationLineService allocationLineService = Beans.get(AllocationLineService.class);
 
-    List<SprintAllocationLine> sprintAllocationLines = sprint.getSprintAllocationLineList();
+    List<AllocationLine> allocationLines = sprint.getAllocationLineList();
 
-    if (CollectionUtils.isNotEmpty(sprintAllocationLines)) {
+    if (CollectionUtils.isNotEmpty(allocationLines)) {
 
-      for (SprintAllocationLine line : sprintAllocationLines) {
-        Map<String, BigDecimal> valueMap =
-            sprintAllocationLineService.computeSprintAllocationLine(line);
+      for (AllocationLine line : allocationLines) {
+        Map<String, BigDecimal> valueMap = allocationLineService.computeAllocationLine(line);
         totalPlannedTime =
             totalPlannedTime.add(valueMap.getOrDefault("plannedTime", BigDecimal.ZERO));
         totalRemainingTime =

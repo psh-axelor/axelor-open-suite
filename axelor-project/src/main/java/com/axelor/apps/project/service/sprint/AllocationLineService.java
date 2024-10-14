@@ -18,16 +18,15 @@
  */
 package com.axelor.apps.project.service.sprint;
 
+import com.axelor.apps.project.db.AllocationLine;
 import com.axelor.apps.project.db.Project;
 import com.axelor.apps.project.db.Sprint;
-import com.axelor.apps.project.db.SprintAllocationLine;
 import java.math.BigDecimal;
 import java.util.HashMap;
 
-public interface SprintAllocationLineService {
+public interface AllocationLineService {
 
   public void sprintOnChange(Project project, Sprint sprint);
 
-  public HashMap<String, BigDecimal> computeSprintAllocationLine(
-      SprintAllocationLine sprintAllocationLine);
+  public HashMap<String, BigDecimal> computeAllocationLine(AllocationLine allocationLine);
 }

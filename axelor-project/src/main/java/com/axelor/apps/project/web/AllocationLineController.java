@@ -18,23 +18,22 @@
  */
 package com.axelor.apps.project.web;
 
+import com.axelor.apps.project.db.AllocationLine;
 import com.axelor.apps.project.db.Sprint;
-import com.axelor.apps.project.db.SprintAllocationLine;
-import com.axelor.apps.project.service.sprint.SprintAllocationLineService;
+import com.axelor.apps.project.service.sprint.AllocationLineService;
 import com.axelor.inject.Beans;
 import com.axelor.rpc.ActionRequest;
 import com.axelor.rpc.ActionResponse;
 import java.math.BigDecimal;
 import java.util.HashMap;
 
-public class SprintAllocationLineController {
+public class AllocationLineController {
 
   public void userDomain(ActionRequest request, ActionResponse response) {
 
-    SprintAllocationLine sprintAllocationLine =
-        request.getContext().asType(SprintAllocationLine.class);
+    AllocationLine allocationLine = request.getContext().asType(AllocationLine.class);
 
-    Sprint sprint = sprintAllocationLine.getSprint();
+    Sprint sprint = allocationLine.getSprint();
 
     String domain =
         sprint != null
@@ -44,14 +43,12 @@ public class SprintAllocationLineController {
     response.setAttr("user", "domain", domain);
   }
 
-  public void computeSprintAllocationLine(ActionRequest request, ActionResponse response) {
+  public void computeAllocationLine(ActionRequest request, ActionResponse response) {
 
-    SprintAllocationLine sprintAllocationLine =
-        request.getContext().asType(SprintAllocationLine.class);
+    AllocationLine allocationLine = request.getContext().asType(AllocationLine.class);
 
     HashMap<String, BigDecimal> valueMap =
-        Beans.get(SprintAllocationLineService.class)
-            .computeSprintAllocationLine(sprintAllocationLine);
+        Beans.get(AllocationLineService.class).computeAllocationLine(allocationLine);
 
     response.setValue("$leaves", valueMap.get("leaves"));
     response.setValue("$plannedTime", valueMap.get("plannedTime"));

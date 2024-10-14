@@ -21,13 +21,13 @@ package com.axelor.apps.hr.service.sprint;
 import com.axelor.apps.base.service.weeklyplanning.WeeklyPlanningService;
 import com.axelor.apps.hr.db.Employee;
 import com.axelor.apps.hr.service.leave.LeaveRequestService;
+import com.axelor.apps.project.db.AllocationLine;
 import com.axelor.apps.project.db.AllocationPeriod;
 import com.axelor.apps.project.db.ProjectPlanningTime;
 import com.axelor.apps.project.db.ProjectTask;
 import com.axelor.apps.project.db.Sprint;
-import com.axelor.apps.project.db.SprintAllocationLine;
-import com.axelor.apps.project.db.repo.SprintAllocationLineRepository;
-import com.axelor.apps.project.service.sprint.SprintAllocationLineServiceImpl;
+import com.axelor.apps.project.db.repo.AllocationLineRepository;
+import com.axelor.apps.project.service.sprint.AllocationLineServiceImpl;
 import com.axelor.auth.db.User;
 import com.google.inject.Inject;
 import java.math.BigDecimal;
@@ -37,29 +37,28 @@ import java.util.HashMap;
 import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 
-public class SprintAllocationLineHRServiceImpl extends SprintAllocationLineServiceImpl {
+public class AllocationLineHRServiceImpl extends AllocationLineServiceImpl {
 
   protected LeaveRequestService leaveRequestService;
   protected WeeklyPlanningService weeklyPlanningService;
 
   @Inject
-  public SprintAllocationLineHRServiceImpl(
-      SprintAllocationLineRepository sprintAllocationLineRepo,
+  public AllocationLineHRServiceImpl(
+      AllocationLineRepository allocationLineRepo,
       LeaveRequestService leaveRequestService,
       WeeklyPlanningService weeklyPlanningService) {
 
-    super(sprintAllocationLineRepo);
+    super(allocationLineRepo);
 
     this.leaveRequestService = leaveRequestService;
     this.weeklyPlanningService = weeklyPlanningService;
   }
 
   @Override
-  public HashMap<String, BigDecimal> computeSprintAllocationLine(
-      SprintAllocationLine sprintAllocationLine) {
+  public HashMap<String, BigDecimal> computeAllocationLine(AllocationLine allocationLine) {
 
-    Sprint sprint = sprintAllocationLine.getSprint();
-    User user = sprintAllocationLine.getUser();
+    Sprint sprint = allocationLine.getSprint();
+    User user = allocationLine.getUser();
 
     HashMap<String, BigDecimal> valueMap = new HashMap<>();
 
@@ -105,7 +104,7 @@ public class SprintAllocationLineHRServiceImpl extends SprintAllocationLineServi
       remainingTime =
           BigDecimal.valueOf(workingDayCount)
               .subtract(leaveDayCount)
-              .subtract(sprintAllocationLine.getAllocated());
+              .subtract(allocationLine.getAllocated());
     }
 
     valueMap.put("leaves", leaveDayCount.setScale(2, RoundingMode.HALF_UP));

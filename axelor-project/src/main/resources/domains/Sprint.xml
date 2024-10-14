@@ -16,8 +16,8 @@
       title="Tasks" mappedBy="sprint" orphanRemoval="false"/>
     <integer name="sequence" title="Sequence"/>
     <boolean name="isBacklog" title="Is backlog?" default="false"/>
-    <one-to-many ref="com.axelor.apps.project.db.SprintAllocationLine"
-      name="sprintAllocationLineList" title="Sprint allocation lines" mappedBy="sprint"/>
+    <one-to-many ref="com.axelor.apps.project.db.AllocationLine"
+      name="allocationLineList" title="Allocation lines" mappedBy="sprint"/>
 
   </entity>
 

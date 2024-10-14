@@ -34,7 +34,7 @@ import com.axelor.apps.project.service.ProjectCheckListTemplateService;
 import com.axelor.apps.project.service.ProjectService;
 import com.axelor.apps.project.service.ProjectTaskToolService;
 import com.axelor.apps.project.service.app.AppProjectService;
-import com.axelor.apps.project.service.sprint.SprintAllocationLineService;
+import com.axelor.apps.project.service.sprint.AllocationLineService;
 import com.axelor.apps.project.service.sprint.SprintService;
 import com.axelor.common.ObjectUtils;
 import com.axelor.i18n.I18n;
@@ -205,7 +205,7 @@ public class ProjectController {
           Long.valueOf(((LinkedHashMap<String, Object>) sprintContext).get("id").toString());
       Sprint sprint = Beans.get(SprintRepository.class).find(sprintId);
 
-      Beans.get(SprintAllocationLineService.class).sprintOnChange(project, sprint);
+      Beans.get(AllocationLineService.class).sprintOnChange(project, sprint);
     }
   }
 

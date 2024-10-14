@@ -18,15 +18,15 @@
  */
 package com.axelor.apps.project.db.repo;
 
-import com.axelor.apps.project.db.SprintAllocationLine;
-import com.axelor.apps.project.service.sprint.SprintAllocationLineService;
+import com.axelor.apps.project.db.AllocationLine;
+import com.axelor.apps.project.service.sprint.AllocationLineService;
 import com.axelor.inject.Beans;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class SprintAllocationLineManagementRepository extends SprintAllocationLineRepository {
+public class AllocationLineManagementRepository extends AllocationLineRepository {
 
   @Override
   public Map<String, Object> populate(Map<String, Object> json, Map<String, Object> context) {
@@ -35,11 +35,10 @@ public class SprintAllocationLineManagementRepository extends SprintAllocationLi
       return super.populate(json, context);
     }
 
-    SprintAllocationLine sprintAllocationLine = find((Long) json.get("id"));
+    AllocationLine allocationLine = find((Long) json.get("id"));
 
     HashMap<String, BigDecimal> valueMap =
-        Beans.get(SprintAllocationLineService.class)
-            .computeSprintAllocationLine(sprintAllocationLine);
+        Beans.get(AllocationLineService.class).computeAllocationLine(allocationLine);
 
     json.put("$leaves", valueMap.get("leaves"));
     json.put("$plannedTime", valueMap.get("plannedTime"));

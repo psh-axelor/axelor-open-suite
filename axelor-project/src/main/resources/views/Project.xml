@@ -379,8 +379,8 @@
         title="Sprint"
         onChange="action-project-method-on-change-sprint,action-project-attrs-on-change-sprint"
         x-dirty="false" domain="self.project.id = :id" colSpan="6"/>
-      <panel-dashlet action="action-project-view-sprint-allocation-lines"
-        name="sprintAllocationLinePanel" colSpan="12"/>
+      <panel-dashlet action="action-project-view-allocation-lines"
+        name="allocationLinePanel" colSpan="12"/>
       <panel-dashlet action="action-project-view-sprints-summary"
         name="sprintSummaryPanel" readonly="true" colSpan="12"/>
       <panel-dashlet action="action-project-method-tasks-per-sprint"
@@ -612,7 +612,7 @@
   </action-attrs>
 
   <action-attrs name="action-project-attrs-on-change-sprint">
-    <attribute name="refresh" for="sprintAllocationLinePanel" expr="eval: true"/>
+    <attribute name="refresh" for="allocationLinePanel" expr="eval: true"/>
   </action-attrs>
 
   <!-- ACTION RECORD -->
@@ -878,10 +878,10 @@
     <context name="_showRecord" expr="eval: id"/>
   </action-view>
 
-  <action-view name="action-project-view-sprint-allocation-lines"
-    title="Sprint allocation lines" model="com.axelor.apps.project.db.SprintAllocationLine">
-    <view type="grid" name="sprint-allocation-line-sprint-grid"/>
-    <view type="form" name="sprint-allocation-line-form"/>
+  <action-view name="action-project-view-allocation-lines" title="Allocation lines"
+    model="com.axelor.apps.project.db.AllocationLine">
+    <view type="grid" name="allocation-line-sprint-grid"/>
+    <view type="form" name="allocation-line-form"/>
     <domain>self.sprint = :sprint</domain>
   </action-view>
 

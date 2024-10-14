@@ -18,10 +18,10 @@
  */
 package com.axelor.apps.project.service.sprint;
 
+import com.axelor.apps.project.db.AllocationLine;
 import com.axelor.apps.project.db.Project;
 import com.axelor.apps.project.db.Sprint;
-import com.axelor.apps.project.db.SprintAllocationLine;
-import com.axelor.apps.project.db.repo.SprintAllocationLineRepository;
+import com.axelor.apps.project.db.repo.AllocationLineRepository;
 import com.axelor.auth.db.User;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
@@ -31,14 +31,14 @@ import java.util.List;
 import java.util.Set;
 import org.apache.commons.collections.CollectionUtils;
 
-public class SprintAllocationLineServiceImpl implements SprintAllocationLineService {
+public class AllocationLineServiceImpl implements AllocationLineService {
 
-  protected SprintAllocationLineRepository sprintAllocationLineRepo;
+  protected AllocationLineRepository allocationLineRepo;
 
   @Inject
-  public SprintAllocationLineServiceImpl(SprintAllocationLineRepository sprintAllocationLineRepo) {
+  public AllocationLineServiceImpl(AllocationLineRepository allocationLineRepo) {
 
-    this.sprintAllocationLineRepo = sprintAllocationLineRepo;
+    this.allocationLineRepo = allocationLineRepo;
   }
 
   @Override
@@ -48,28 +48,27 @@ public class SprintAllocationLineServiceImpl implements SprintAllocationLineServ
     Set<User> membersUserSet = project.getMembersUserSet();
 
     if (CollectionUtils.isNotEmpty(membersUserSet)) {
-      List<SprintAllocationLine> sprintAllocationLineList = sprint.getSprintAllocationLineList();
+      List<AllocationLine> allocationLineList = sprint.getAllocationLineList();
 
       for (User member : membersUserSet) {
-        SprintAllocationLine sprintAllocationLine =
-            sprintAllocationLineList.stream()
+        AllocationLine allocationLine =
+            allocationLineList.stream()
                 .filter(line -> line.getUser().equals(member))
                 .findFirst()
                 .orElse(null);
 
-        if (sprintAllocationLine == null) {
-          sprintAllocationLine = new SprintAllocationLine();
-          sprintAllocationLine.setSprint(sprint);
-          sprintAllocationLine.setUser(member);
-          sprintAllocationLineRepo.save(sprintAllocationLine);
+        if (allocationLine == null) {
+          allocationLine = new AllocationLine();
+          allocationLine.setSprint(sprint);
+          allocationLine.setUser(member);
+          allocationLineRepo.save(allocationLine);
         }
       }
     }
   }
 
   @Override
-  public HashMap<String, BigDecimal> computeSprintAllocationLine(
-      SprintAllocationLine sprintAllocationLine) {
+  public HashMap<String, BigDecimal> computeAllocationLine(AllocationLine allocationLine) {
 
     HashMap<String, BigDecimal> valueMap = new HashMap<>();
 
