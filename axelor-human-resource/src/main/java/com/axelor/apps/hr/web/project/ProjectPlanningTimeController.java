@@ -24,11 +24,11 @@ import com.axelor.apps.base.service.app.AppBaseService;
 import com.axelor.apps.hr.service.project.PlannedTimeValueService;
 import com.axelor.apps.hr.service.project.ProjectPlanningTimeService;
 import com.axelor.apps.hr.service.project.ProjectTaskHRService;
+import com.axelor.apps.project.db.AllocationPeriod;
 import com.axelor.apps.project.db.PlannedTimeValue;
 import com.axelor.apps.project.db.Project;
 import com.axelor.apps.project.db.ProjectPlanningTime;
 import com.axelor.apps.project.db.ProjectTask;
-import com.axelor.apps.project.db.SprintPeriod;
 import com.axelor.apps.project.service.config.ProjectConfigService;
 import com.axelor.db.JPA;
 import com.axelor.inject.Beans;
@@ -214,11 +214,11 @@ public class ProjectPlanningTimeController {
       response.setValue("plannedTime", plannedTime);
       response.setValue("displayPlannedTime", plannedTime);
 
-      SprintPeriod sprintPeriod = projectTask.getSprint().getSprintPeriod();
+      AllocationPeriod allocationPeriod = projectTask.getSprint().getAllocationPeriod();
 
-      if (sprintPeriod != null) {
-        response.setValue("startDateTime", sprintPeriod.getFromDate().atStartOfDay());
-        response.setValue("endDateTime", sprintPeriod.getToDate().atStartOfDay());
+      if (allocationPeriod != null) {
+        response.setValue("startDateTime", allocationPeriod.getFromDate().atStartOfDay());
+        response.setValue("endDateTime", allocationPeriod.getToDate().atStartOfDay());
       }
     }
   }

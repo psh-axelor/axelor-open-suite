@@ -19,10 +19,10 @@
 package com.axelor.apps.hr.service.project;
 
 import com.axelor.apps.hr.db.Employee;
+import com.axelor.apps.project.db.AllocationPeriod;
 import com.axelor.apps.project.db.ProjectPlanningTime;
 import com.axelor.apps.project.db.ProjectTask;
 import com.axelor.apps.project.db.Sprint;
-import com.axelor.apps.project.db.SprintPeriod;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -36,7 +36,7 @@ public interface ProjectTaskHRService {
   public List<ProjectPlanningTime> getExistingPlanningTime(
       List<ProjectPlanningTime> projectPlanningTimeList,
       Employee employee,
-      SprintPeriod sprintPeriod);
+      AllocationPeriod allocationPeriod);
 
   public BigDecimal calculatePlannedTime(ProjectTask projectTask);
 }

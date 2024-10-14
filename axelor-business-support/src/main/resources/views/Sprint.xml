@@ -6,7 +6,7 @@
   <grid id="business-support-sprint-grid" name="sprint-grid" title="Sprints"
     model="com.axelor.apps.project.db.Sprint" extension="true">
 
-    <extend target="//field[@name='sprintPeriod']">
+    <extend target="//field[@name='allocationPeriod']">
       <insert position="after">
         <field name="targetVersion"/>
       </insert>
@@ -17,7 +17,7 @@
   <form id="business-support-sprint-form" name="sprint-form" title="Sprint"
     model="com.axelor.apps.project.db.Sprint" extension="true">
 
-    <extend target="//field[@name='sprintPeriod']">
+    <extend target="//field[@name='allocationPeriod']">
       <insert position="after">
         <field name="targetVersion"/>
       </insert>

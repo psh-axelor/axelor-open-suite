@@ -79,10 +79,10 @@ import com.axelor.apps.project.service.app.AppProjectService;
 import com.axelor.apps.project.service.app.AppProjectServiceImpl;
 import com.axelor.apps.project.service.config.ProjectConfigService;
 import com.axelor.apps.project.service.config.ProjectConfigServiceImpl;
+import com.axelor.apps.project.service.sprint.AllocationPeriodService;
+import com.axelor.apps.project.service.sprint.AllocationPeriodServiceImpl;
 import com.axelor.apps.project.service.sprint.SprintAllocationLineService;
 import com.axelor.apps.project.service.sprint.SprintAllocationLineServiceImpl;
-import com.axelor.apps.project.service.sprint.SprintPeriodService;
-import com.axelor.apps.project.service.sprint.SprintPeriodServiceImpl;
 import com.axelor.apps.project.service.sprint.SprintService;
 import com.axelor.apps.project.service.sprint.SprintServiceImpl;
 import com.axelor.apps.project.service.taskLink.ProjectTaskLinkService;
@@ -131,6 +131,6 @@ public class ProjectModule extends AxelorModule {
     bind(SprintAllocationLineService.class).to(SprintAllocationLineServiceImpl.class);
     bind(SprintService.class).to(SprintServiceImpl.class);
     bind(SprintRepository.class).to(SprintManagementRepository.class);
-    bind(SprintPeriodService.class).to(SprintPeriodServiceImpl.class);
+    bind(AllocationPeriodService.class).to(AllocationPeriodServiceImpl.class);
   }
 }

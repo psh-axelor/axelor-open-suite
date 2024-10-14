@@ -20,8 +20,8 @@ package com.axelor.apps.project.web;
 
 import com.axelor.apps.base.db.Company;
 import com.axelor.apps.base.db.repo.CompanyRepository;
-import com.axelor.apps.project.db.SprintPeriod;
-import com.axelor.apps.project.service.sprint.SprintPeriodService;
+import com.axelor.apps.project.db.AllocationPeriod;
+import com.axelor.apps.project.service.sprint.AllocationPeriodService;
 import com.axelor.i18n.I18n;
 import com.axelor.inject.Beans;
 import com.axelor.meta.schema.actions.ActionView;
@@ -33,10 +33,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 
-public class SprintPeriodController {
+public class AllocationPeriodController {
 
   @SuppressWarnings("unchecked")
-  public void generateSprintPeriods(ActionRequest request, ActionResponse response) {
+  public void generateAllocationPeriods(ActionRequest request, ActionResponse response) {
 
     Object companyContext = request.getContext().get("company");
     Object fromDateContext = request.getContext().get("fromDate");
@@ -58,22 +58,25 @@ public class SprintPeriodController {
 
       Company company = Beans.get(CompanyRepository.class).find(companyId);
 
-      List<SprintPeriod> sprintPeriodList =
-          Beans.get(SprintPeriodService.class)
-              .generateSprintPeriods(company, fromDate, toDate, nbOfDaysPerSprint, considerWeekend);
+      List<AllocationPeriod> allocationPeriodList =
+          Beans.get(AllocationPeriodService.class)
+              .generateAllocationPeriods(
+                  company, fromDate, toDate, nbOfDaysPerSprint, considerWeekend);
 
-      if (CollectionUtils.isNotEmpty(sprintPeriodList)) {
-        response.setInfo(I18n.get("Sprint periods generated"));
+      if (CollectionUtils.isNotEmpty(allocationPeriodList)) {
+        response.setInfo(I18n.get("Allocation periods generated"));
 
         ActionView.ActionViewBuilder actionViewBuilder =
-            ActionView.define(I18n.get("Sprint periods"));
-        actionViewBuilder.model(SprintPeriod.class.getName());
-        actionViewBuilder.add("grid", "sprint-period-grid");
-        actionViewBuilder.add("form", "sprint-period-form");
-        actionViewBuilder.domain("self.id IN (:sprintPeriodIds)");
+            ActionView.define(I18n.get("Allocation periods"));
+        actionViewBuilder.model(AllocationPeriod.class.getName());
+        actionViewBuilder.add("grid", "allocation-period-grid");
+        actionViewBuilder.add("form", "allocation-period-form");
+        actionViewBuilder.domain("self.id IN (:allocationPeriodIds)");
         actionViewBuilder.context(
-            "sprintPeriodIds",
-            sprintPeriodList.stream().map(SprintPeriod::getId).collect(Collectors.toList()));
+            "allocationPeriodIds",
+            allocationPeriodList.stream()
+                .map(AllocationPeriod::getId)
+                .collect(Collectors.toList()));
 
         response.setView(actionViewBuilder.map());
       }

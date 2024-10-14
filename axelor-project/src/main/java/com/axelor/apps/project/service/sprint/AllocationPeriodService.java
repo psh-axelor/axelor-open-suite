@@ -19,13 +19,13 @@
 package com.axelor.apps.project.service.sprint;
 
 import com.axelor.apps.base.db.Company;
-import com.axelor.apps.project.db.SprintPeriod;
+import com.axelor.apps.project.db.AllocationPeriod;
 import java.time.LocalDate;
 import java.util.List;
 
-public interface SprintPeriodService {
+public interface AllocationPeriodService {
 
-  public List<SprintPeriod> generateSprintPeriods(
+  public List<AllocationPeriod> generateAllocationPeriods(
       Company company,
       LocalDate fromDate,
       LocalDate toDate,

@@ -18,11 +18,11 @@
  */
 package com.axelor.apps.project.web;
 
+import com.axelor.apps.project.db.AllocationPeriod;
 import com.axelor.apps.project.db.Project;
 import com.axelor.apps.project.db.Sprint;
-import com.axelor.apps.project.db.SprintPeriod;
+import com.axelor.apps.project.db.repo.AllocationPeriodRepository;
 import com.axelor.apps.project.db.repo.ProjectRepository;
-import com.axelor.apps.project.db.repo.SprintPeriodRepository;
 import com.axelor.apps.project.service.sprint.SprintService;
 import com.axelor.i18n.I18n;
 import com.axelor.inject.Beans;
@@ -39,7 +39,7 @@ import org.apache.commons.collections.CollectionUtils;
 public class SprintController {
 
   @SuppressWarnings("unchecked")
-  public void sprintPeriodDomain(ActionRequest request, ActionResponse response) {
+  public void allocationPeriodDomain(ActionRequest request, ActionResponse response) {
 
     Object projectsContext = request.getContext().get("projects");
 
@@ -56,18 +56,20 @@ public class SprintController {
     }
 
     response.setAttr(
-        "sprintPeriods", "domain", Beans.get(SprintService.class).sprintPeriodDomain(projects));
+        "allocationPeriods",
+        "domain",
+        Beans.get(SprintService.class).allocationPeriodDomain(projects));
   }
 
   @SuppressWarnings("unchecked")
   public void generateSprints(ActionRequest request, ActionResponse response) {
 
     Object projectsContext = request.getContext().get("projects");
-    Object sprintPeriodsContext = request.getContext().get("sprintPeriods");
+    Object allocationPeriodsContext = request.getContext().get("allocationPeriods");
 
-    if (projectsContext != null && sprintPeriodsContext != null) {
+    if (projectsContext != null && allocationPeriodsContext != null) {
       ProjectRepository projectRepo = Beans.get(ProjectRepository.class);
-      SprintPeriodRepository sprintPeriodRepo = Beans.get(SprintPeriodRepository.class);
+      AllocationPeriodRepository allocationPeriodRepo = Beans.get(AllocationPeriodRepository.class);
 
       Set<Project> projects =
           ((List<LinkedHashMap<String, Object>>) projectsContext)
@@ -75,16 +77,17 @@ public class SprintController {
                   .map(project -> projectRepo.find(Long.valueOf(project.get("id").toString())))
                   .collect(Collectors.toSet());
 
-      Set<SprintPeriod> sprintPeriods =
-          ((List<LinkedHashMap<String, Object>>) sprintPeriodsContext)
+      Set<AllocationPeriod> allocationPeriods =
+          ((List<LinkedHashMap<String, Object>>) allocationPeriodsContext)
               .stream()
                   .map(
-                      sprintPeriod ->
-                          sprintPeriodRepo.find(Long.valueOf(sprintPeriod.get("id").toString())))
+                      allocationPeriod ->
+                          allocationPeriodRepo.find(
+                              Long.valueOf(allocationPeriod.get("id").toString())))
                   .collect(Collectors.toSet());
 
       List<Sprint> sprintList =
-          Beans.get(SprintService.class).generateSprints(projects, sprintPeriods);
+          Beans.get(SprintService.class).generateSprints(projects, allocationPeriods);
 
       if (CollectionUtils.isNotEmpty(sprintList)) {
         response.setInfo(I18n.get("Sprints generated"));

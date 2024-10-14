@@ -20,10 +20,10 @@ package com.axelor.apps.hr.service.sprint;
 
 import com.axelor.apps.hr.db.Employee;
 import com.axelor.apps.hr.service.project.ProjectTaskHRService;
+import com.axelor.apps.project.db.AllocationPeriod;
 import com.axelor.apps.project.db.ProjectPlanningTime;
 import com.axelor.apps.project.db.ProjectTask;
 import com.axelor.apps.project.db.Sprint;
-import com.axelor.apps.project.db.SprintPeriod;
 import com.axelor.apps.project.db.repo.ProjectTaskRepository;
 import com.axelor.apps.project.db.repo.SprintRepository;
 import com.axelor.apps.project.service.sprint.SprintServiceImpl;
@@ -73,14 +73,14 @@ public class SprintHRServiceImpl extends SprintServiceImpl {
             .map(ProjectTask::getAssignedTo)
             .map(User::getEmployee)
             .orElse(null);
-    SprintPeriod sprintPeriod = sprint.getSprintPeriod();
+    AllocationPeriod allocationPeriod = sprint.getAllocationPeriod();
     Sprint currentSprint = task.getSprint();
 
     if (currentSprint == null || !currentSprint.equals(sprint)) {
       task.setSprint(sprint);
     }
 
-    if (assignedEmployee == null || sprintPeriod == null) {
+    if (assignedEmployee == null || allocationPeriod == null) {
       return;
     }
 
@@ -88,13 +88,13 @@ public class SprintHRServiceImpl extends SprintServiceImpl {
         projectTaskHRService.getExistingPlanningTime(
             task.getProjectPlanningTimeList(),
             assignedEmployee,
-            currentSprint != null ? currentSprint.getSprintPeriod() : null);
+            currentSprint != null ? currentSprint.getAllocationPeriod() : null);
 
     if (CollectionUtils.isNotEmpty(projectPlanningTimeList)) {
       projectPlanningTimeList.forEach(
           planning -> {
-            planning.setStartDateTime(sprintPeriod.getFromDate().atStartOfDay());
-            planning.setEndDateTime(sprintPeriod.getToDate().atStartOfDay());
+            planning.setStartDateTime(allocationPeriod.getFromDate().atStartOfDay());
+            planning.setEndDateTime(allocationPeriod.getToDate().atStartOfDay());
             BigDecimal plannedTime = projectTaskHRService.calculatePlannedTime(task);
             planning.setPlannedTime(plannedTime);
             planning.setDisplayPlannedTime(plannedTime);

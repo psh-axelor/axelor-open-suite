@@ -21,11 +21,11 @@ package com.axelor.apps.hr.service.sprint;
 import com.axelor.apps.base.service.weeklyplanning.WeeklyPlanningService;
 import com.axelor.apps.hr.db.Employee;
 import com.axelor.apps.hr.service.leave.LeaveRequestService;
+import com.axelor.apps.project.db.AllocationPeriod;
 import com.axelor.apps.project.db.ProjectPlanningTime;
 import com.axelor.apps.project.db.ProjectTask;
 import com.axelor.apps.project.db.Sprint;
 import com.axelor.apps.project.db.SprintAllocationLine;
-import com.axelor.apps.project.db.SprintPeriod;
 import com.axelor.apps.project.db.repo.SprintAllocationLineRepository;
 import com.axelor.apps.project.service.sprint.SprintAllocationLineServiceImpl;
 import com.axelor.auth.db.User;
@@ -67,14 +67,14 @@ public class SprintAllocationLineHRServiceImpl extends SprintAllocationLineServi
     BigDecimal plannedTime = BigDecimal.ZERO;
     BigDecimal remainingTime = BigDecimal.ZERO;
 
-    if (sprint != null && user != null && sprint.getSprintPeriod() != null) {
-      SprintPeriod sprintPeriod = sprint.getSprintPeriod();
+    if (sprint != null && user != null && sprint.getAllocationPeriod() != null) {
+      AllocationPeriod allocationPeriod = sprint.getAllocationPeriod();
       Employee employee = user.getEmployee();
       double workingDay = 0;
       double workingDayCount = 0;
 
-      for (LocalDate date = sprintPeriod.getFromDate();
-          !date.isAfter(sprintPeriod.getToDate());
+      for (LocalDate date = allocationPeriod.getFromDate();
+          !date.isAfter(allocationPeriod.getToDate());
           date = date.plusDays(1)) {
 
         if (employee != null) {

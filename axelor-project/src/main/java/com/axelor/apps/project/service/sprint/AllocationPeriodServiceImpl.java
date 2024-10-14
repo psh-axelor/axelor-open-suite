@@ -20,8 +20,8 @@ package com.axelor.apps.project.service.sprint;
 
 import com.axelor.apps.base.db.Company;
 import com.axelor.apps.base.service.weeklyplanning.WeeklyPlanningService;
-import com.axelor.apps.project.db.SprintPeriod;
-import com.axelor.apps.project.db.repo.SprintPeriodRepository;
+import com.axelor.apps.project.db.AllocationPeriod;
+import com.axelor.apps.project.db.repo.AllocationPeriodRepository;
 import com.axelor.i18n.I18n;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
@@ -30,29 +30,30 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SprintPeriodServiceImpl implements SprintPeriodService {
+public class AllocationPeriodServiceImpl implements AllocationPeriodService {
 
-  protected SprintPeriodRepository sprintPeriodRepo;
+  protected AllocationPeriodRepository allocationPeriodRepo;
   protected WeeklyPlanningService weeklyPlanningService;
 
   @Inject
-  public SprintPeriodServiceImpl(
-      SprintPeriodRepository sprintPeriodRepo, WeeklyPlanningService weeklyPlanningService) {
+  public AllocationPeriodServiceImpl(
+      AllocationPeriodRepository allocationPeriodRepo,
+      WeeklyPlanningService weeklyPlanningService) {
 
-    this.sprintPeriodRepo = sprintPeriodRepo;
+    this.allocationPeriodRepo = allocationPeriodRepo;
     this.weeklyPlanningService = weeklyPlanningService;
   }
 
   @Override
   @Transactional(rollbackOn = Exception.class)
-  public List<SprintPeriod> generateSprintPeriods(
+  public List<AllocationPeriod> generateAllocationPeriods(
       Company company,
       LocalDate fromDate,
       LocalDate toDate,
       int nbOfDaysPerSprint,
       boolean considerWeekend) {
 
-    List<SprintPeriod> sprintPeriods = new ArrayList<>();
+    List<AllocationPeriod> allocationPeriods = new ArrayList<>();
     LocalDate currentStartDate = fromDate;
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM d");
@@ -79,19 +80,19 @@ public class SprintPeriodServiceImpl implements SprintPeriodService {
         daysCounted = nbOfDaysPerSprint;
       }
 
-      SprintPeriod sprintPeriod = new SprintPeriod();
-      sprintPeriod.setFromDate(currentStartDate);
-      sprintPeriod.setToDate(endDate.minusDays(1));
-      sprintPeriod.setCompany(company);
-      sprintPeriod.setName(
+      AllocationPeriod allocationPeriod = new AllocationPeriod();
+      allocationPeriod.setFromDate(currentStartDate);
+      allocationPeriod.setToDate(endDate.minusDays(1));
+      allocationPeriod.setCompany(company);
+      allocationPeriod.setName(
           I18n.get("Period")
               + " "
-              + formatter.format(sprintPeriod.getFromDate())
+              + formatter.format(allocationPeriod.getFromDate())
               + " - "
-              + formatter.format(sprintPeriod.getToDate()));
+              + formatter.format(allocationPeriod.getToDate()));
 
-      sprintPeriodRepo.save(sprintPeriod);
-      sprintPeriods.add(sprintPeriod);
+      allocationPeriodRepo.save(allocationPeriod);
+      allocationPeriods.add(allocationPeriod);
 
       currentStartDate = endDate;
 
@@ -102,6 +103,6 @@ public class SprintPeriodServiceImpl implements SprintPeriodService {
       }
     }
 
-    return sprintPeriods;
+    return allocationPeriods;
   }
 }

@@ -5,7 +5,7 @@
 
   <module name="project" package="com.axelor.apps.project.db"/>
 
-  <entity name="SprintPeriod">
+  <entity name="AllocationPeriod">
 
     <string name="name" title="Name"/>
     <many-to-one name="company" ref="com.axelor.apps.base.db.Company" title="Company"/>

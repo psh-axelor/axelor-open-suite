@@ -18,10 +18,10 @@
  */
 package com.axelor.apps.project.service.sprint;
 
+import com.axelor.apps.project.db.AllocationPeriod;
 import com.axelor.apps.project.db.Project;
 import com.axelor.apps.project.db.ProjectTask;
 import com.axelor.apps.project.db.Sprint;
-import com.axelor.apps.project.db.SprintPeriod;
 import com.axelor.apps.project.db.repo.ProjectTaskRepository;
 import com.axelor.apps.project.db.repo.SprintRepository;
 import com.axelor.i18n.I18n;
@@ -60,7 +60,7 @@ public class SprintServiceImpl implements SprintService {
   }
 
   @Override
-  public String sprintPeriodDomain(Set<Project> projects) {
+  public String allocationPeriodDomain(Set<Project> projects) {
 
     if (CollectionUtils.isEmpty(projects)) {
       return "self.id in (0)";
@@ -78,7 +78,8 @@ public class SprintServiceImpl implements SprintService {
 
   @Override
   @Transactional(rollbackOn = Exception.class)
-  public List<Sprint> generateSprints(Set<Project> projects, Set<SprintPeriod> sprintPeriods) {
+  public List<Sprint> generateSprints(
+      Set<Project> projects, Set<AllocationPeriod> allocationPeriods) {
 
     List<Sprint> sprintList = new ArrayList<>();
 
@@ -86,16 +87,16 @@ public class SprintServiceImpl implements SprintService {
 
     projects.forEach(
         project -> {
-          sprintPeriods.forEach(
-              sprintPeriod -> {
+          allocationPeriods.forEach(
+              allocationPeriod -> {
                 Sprint sprint = new Sprint();
                 sprint.setName(
                     I18n.get("Sprint")
                         + " "
-                        + formatter.format(sprintPeriod.getFromDate())
+                        + formatter.format(allocationPeriod.getFromDate())
                         + " - "
-                        + formatter.format(sprintPeriod.getToDate()));
-                sprint.setSprintPeriod(sprintPeriod);
+                        + formatter.format(allocationPeriod.getToDate()));
+                sprint.setAllocationPeriod(allocationPeriod);
                 sprint.setProject(project);
                 sprintRepo.save(sprint);
                 sprintList.add(sprint);

@@ -22,10 +22,10 @@ import com.axelor.apps.base.db.repo.FrequencyRepository;
 import com.axelor.apps.base.service.FrequencyService;
 import com.axelor.apps.base.service.app.AppBaseService;
 import com.axelor.apps.hr.db.Employee;
+import com.axelor.apps.project.db.AllocationPeriod;
 import com.axelor.apps.project.db.ProjectPlanningTime;
 import com.axelor.apps.project.db.ProjectTask;
 import com.axelor.apps.project.db.Sprint;
-import com.axelor.apps.project.db.SprintPeriod;
 import com.axelor.apps.project.db.repo.ProjectRepository;
 import com.axelor.apps.project.db.repo.ProjectTaskRepository;
 import com.axelor.apps.project.db.repo.TaskStatusProgressByCategoryRepository;
@@ -100,19 +100,21 @@ public class ProjectTaskHRServiceImpl extends ProjectTaskServiceImpl
             .map(ProjectTask::getAssignedTo)
             .map(User::getEmployee)
             .orElse(null);
-    SprintPeriod sprintPeriod = projectTask.getSprint().getSprintPeriod();
-    SprintPeriod dbSprintPeriod = projectTaskDb.getSprint().getSprintPeriod();
+    AllocationPeriod allocationPeriod = projectTask.getSprint().getAllocationPeriod();
+    AllocationPeriod dbAllocationPeriod = projectTaskDb.getSprint().getAllocationPeriod();
 
     LocalDateTime fromDateTime =
-        Optional.ofNullable(sprintPeriod.getFromDate()).map(LocalDate::atStartOfDay).orElse(null);
+        Optional.ofNullable(allocationPeriod.getFromDate())
+            .map(LocalDate::atStartOfDay)
+            .orElse(null);
     LocalDateTime toDateTime =
-        Optional.ofNullable(sprintPeriod.getToDate()).map(LocalDate::atStartOfDay).orElse(null);
+        Optional.ofNullable(allocationPeriod.getToDate()).map(LocalDate::atStartOfDay).orElse(null);
 
     boolean updated =
         projectPlanningTimeList.stream()
                 .filter(
                     planningTime ->
-                        shouldUpdatePlanningTime(planningTime, dbEmployee, dbSprintPeriod))
+                        shouldUpdatePlanningTime(planningTime, dbEmployee, dbAllocationPeriod))
                 .peek(
                     planningTime ->
                         updateProjectPlanningTime(planningTime, employee, fromDateTime, toDateTime))
@@ -134,12 +136,12 @@ public class ProjectTaskHRServiceImpl extends ProjectTaskServiceImpl
   private boolean isInvalidInput(ProjectTask projectTask) {
 
     return projectTask.getSprint() == null
-        || projectTask.getSprint().getSprintPeriod() == null
+        || projectTask.getSprint().getAllocationPeriod() == null
         || projectTask.getAssignedTo().getEmployee() == null;
   }
 
   private boolean shouldUpdatePlanningTime(
-      ProjectPlanningTime planningTime, Employee employee, SprintPeriod sprintPeriod) {
+      ProjectPlanningTime planningTime, Employee employee, AllocationPeriod allocationPeriod) {
 
     Employee planningEmployee = planningTime.getEmployee();
     LocalDateTime startDateTime = planningTime.getStartDateTime();
@@ -148,13 +150,13 @@ public class ProjectTaskHRServiceImpl extends ProjectTaskServiceImpl
     if (planningEmployee == null
         || startDateTime == null
         || endDateTime == null
-        || sprintPeriod == null) {
+        || allocationPeriod == null) {
       return false;
     }
 
     return planningEmployee.equals(employee)
-        && startDateTime.toLocalDate().equals(sprintPeriod.getFromDate())
-        && endDateTime.toLocalDate().equals(sprintPeriod.getToDate());
+        && startDateTime.toLocalDate().equals(allocationPeriod.getFromDate())
+        && endDateTime.toLocalDate().equals(allocationPeriod.getToDate());
   }
 
   private void updateProjectPlanningTime(
@@ -175,14 +177,14 @@ public class ProjectTaskHRServiceImpl extends ProjectTaskServiceImpl
   @Override
   public ProjectPlanningTime createProjectPlanningTime(ProjectTask projectTask, Sprint sprint) {
 
-    SprintPeriod sprintPeriod = sprint.getSprintPeriod();
+    AllocationPeriod allocationPeriod = sprint.getAllocationPeriod();
     Employee assignedEmployee =
         Optional.ofNullable(projectTask)
             .map(ProjectTask::getAssignedTo)
             .map(User::getEmployee)
             .orElse(null);
 
-    if (sprintPeriod == null || assignedEmployee == null) {
+    if (allocationPeriod == null || assignedEmployee == null) {
       return null;
     }
 
@@ -200,9 +202,9 @@ public class ProjectTaskHRServiceImpl extends ProjectTaskServiceImpl
                   LocalDateTime startDateTime = p.getStartDateTime();
                   LocalDateTime endDateTime = p.getEndDateTime();
                   return startDateTime != null
-                      && startDateTime.toLocalDate().equals(sprintPeriod.getFromDate())
+                      && startDateTime.toLocalDate().equals(allocationPeriod.getFromDate())
                       && endDateTime != null
-                      && endDateTime.toLocalDate().equals(sprintPeriod.getToDate());
+                      && endDateTime.toLocalDate().equals(allocationPeriod.getToDate());
                 });
 
     if (!planningTimeExists) {
@@ -220,13 +222,13 @@ public class ProjectTaskHRServiceImpl extends ProjectTaskServiceImpl
             .map(User::getEmployee)
             .orElse(null);
 
-    SprintPeriod sprintPeriod =
-        Optional.ofNullable(projectTask.getSprint()).map(Sprint::getSprintPeriod).orElse(null);
+    AllocationPeriod allocationPeriod =
+        Optional.ofNullable(projectTask.getSprint()).map(Sprint::getAllocationPeriod).orElse(null);
 
     if (employee == null
-        || sprintPeriod == null
-        || sprintPeriod.getFromDate() == null
-        || sprintPeriod.getToDate() == null
+        || allocationPeriod == null
+        || allocationPeriod.getFromDate() == null
+        || allocationPeriod.getToDate() == null
         || projectTask.getProject() == null) {
       return null;
     }
@@ -237,8 +239,8 @@ public class ProjectTaskHRServiceImpl extends ProjectTaskServiceImpl
     planningTime.setProject(projectRepository.find(projectTask.getProject().getId()));
     planningTime.setEmployee(employee);
     planningTime.setProduct(employee.getProduct());
-    planningTime.setStartDateTime(sprintPeriod.getFromDate().atStartOfDay());
-    planningTime.setEndDateTime(sprintPeriod.getToDate().atStartOfDay());
+    planningTime.setStartDateTime(allocationPeriod.getFromDate().atStartOfDay());
+    planningTime.setEndDateTime(allocationPeriod.getToDate().atStartOfDay());
 
     BigDecimal plannedTime = calculatePlannedTime(projectTask);
     planningTime.setPlannedTime(plannedTime);
@@ -251,10 +253,10 @@ public class ProjectTaskHRServiceImpl extends ProjectTaskServiceImpl
   public List<ProjectPlanningTime> getExistingPlanningTime(
       List<ProjectPlanningTime> projectPlanningTimeList,
       Employee employee,
-      SprintPeriod sprintPeriod) {
+      AllocationPeriod allocationPeriod) {
 
     return Optional.ofNullable(projectPlanningTimeList).orElseGet(Collections::emptyList).stream()
-        .filter(planningTime -> shouldUpdatePlanningTime(planningTime, employee, sprintPeriod))
+        .filter(planningTime -> shouldUpdatePlanningTime(planningTime, employee, allocationPeriod))
         .collect(Collectors.toList());
   }
 
