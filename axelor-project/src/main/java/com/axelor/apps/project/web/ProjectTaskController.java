@@ -34,7 +34,7 @@ import com.axelor.apps.project.db.repo.ProjectTaskRepository;
 import com.axelor.apps.project.service.ProjectTaskService;
 import com.axelor.apps.project.service.TaskStatusToolService;
 import com.axelor.apps.project.service.TimerProjectTaskService;
-import com.axelor.apps.project.service.comment.CommentProjectService;
+import com.axelor.apps.project.service.mail.MailMessageProjectService;
 import com.axelor.apps.project.service.taskLink.ProjectTaskLinkService;
 import com.axelor.common.ObjectUtils;
 import com.axelor.common.StringUtils;
@@ -284,8 +284,8 @@ public class ProjectTaskController {
       ProjectTask projectTask = request.getContext().asType(ProjectTask.class);
       projectTask = Beans.get(ProjectTaskRepository.class).find(projectTask.getId());
 
-      if (CollectionUtils.isNotEmpty(projectTask.getCommentFileList())) {
-        Beans.get(CommentProjectService.class).createCommentWithOnlyAttachment(projectTask);
+      if (CollectionUtils.isNotEmpty(projectTask.getMailMessageFileList())) {
+        Beans.get(MailMessageProjectService.class).createMailMessageWithOnlyAttachment(projectTask);
         response.setReload(true);
       }
     } catch (Exception e) {

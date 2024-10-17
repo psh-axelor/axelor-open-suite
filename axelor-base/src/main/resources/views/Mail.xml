@@ -3,12 +3,12 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_7.1.xsd">
 
-  <form name="comment-form" title="Comment" model="com.axelor.apps.base.db.Comment"
-    onNew="action-comment-attrs-on-new" onLoad="action-comment-attrs-is-private-note-on-change"
-    width="large">
+  <form name="mail-message-form" title="Comment" model="com.axelor.mail.db.MailMessage"
+    onNew="action-mail-message-attrs-on-new"
+    onLoad="action-mail-message-attrs-is-public-note-on-change" width="large">
 
     <panel name="mainPanel">
-      <field name="mailMessage.body" showIf="mailMessage" showTitle="false" colSpan="12">
+      <field name="body" showTitle="false" readonly="true" colSpan="12">
         <viewer>
         <![CDATA[
           <>
@@ -20,8 +20,8 @@
               return (
                 <>
                   <Box as="dd">
-                    {mailMessage.body.startsWith("{") && mailMessage.body.endsWith("}") ? (
-                      JSON.parse(mailMessage.body).tracks
+                    {body.startsWith("{") && body.endsWith("}") ? (
+                      JSON.parse(body).tracks
                         .filter(track => track.title !== "comment.note")
                         .map((track, index) => (
                           <li key={index}>
@@ -32,9 +32,9 @@
                           </li>
                         ))
                     ) : (
-                      <Box>{renderHtml(mailMessage.body)}</Box>
+                      <Box>{renderHtml(body)}</Box>
                     )}
-                    <Box>{renderHtml($commentFiles)}</Box>
+                    <Box>{renderHtml($mailMessageFiles)}</Box>
                   </Box>
                 </>
               );
@@ -43,27 +43,27 @@
         ]]>
         </viewer>
       </field>
-      <field name="parentComment" title="Reply on" showIf="parentComment" canRemove="false"
-        canSelect="false" colSpan="12">
+      <field name="parentMailMessage" title="Reply on" showIf="parentMailMessage"
+        canRemove="false" canSelect="false" colSpan="12">
         <editor x-viewer="true" readonly="true">
           <field name="note" showTitle="false" widget="html" colSpan="12"/>
         </editor>
       </field>
-      <field name="privateNoteLabel" x-dirty="false" readonly="true" showTitle="false"
-        showIf="isPrivateNote">
+      <field name="publicNoteLabel" x-dirty="false" readonly="true" showTitle="false"
+        showIf="isPublicNote">
         <viewer>
         <![CDATA[
           <>
-            {<Badge style={{ backgroundColor: "red" }}>Private Note</Badge>}
+            {<Badge style={{ backgroundColor: "red" }}>Public Note</Badge>}
           </>
         ]]>
         </viewer>
       </field>
       <field name="note" title="Note" widget="html" hideIf="$readonly() &amp;&amp; !note"
         colSpan="12"/>
-      <field name="isPrivateNote" widget="boolean-switch"
-        onChange="action-comment-attrs-is-private-note-on-change" showIf="!$readonly()"/>
-      <field name="commentFileList" title="Files" colSpan="12" hideIf="id">
+      <field name="isPublicNote" widget="boolean-switch"
+        onChange="action-mail-message-attrs-is-public-note-on-change" showIf="!$readonly()"/>
+      <field name="mailMessageFileList" title="Files" colSpan="12" hideIf="id">
         <editor x-viewer="true">
           <field name="attachmentFile" showTitle="false" widget="binary-link"/>
           <field name="description" showTitle="false" widget="string"/>
@@ -73,29 +73,29 @@
 
   </form>
 
-  <cards name="comment-card" model="com.axelor.apps.base.db.Comment" title="Comment"
-    css="rect-image" width="100%" orderBy="-sequence" canEdit="false" canDelete="false">
+  <cards name="mail-message-card" model="com.axelor.mail.db.MailMessage" title="Comment"
+    css="rect-image" width="100%" orderBy="-createdOn" canEdit="false" canDelete="false">
 
-    <field name="sequence"/>
     <field name="note"/>
-    <field name="isPrivateNote"/>
+    <field name="isPublicNote"/>
     <field name="createdBy.name"/>
+    <field name="createdBy.id"/>
     <field name="createdOn"/>
-    <field name="parentComment.id"/>
-    <field name="parentComment.note"/>
-    <field name="parentComment.createdBy.name"/>
-    <field name="mailMessage.body"/>
-    <field name="$commentFiles"/>
-    <field name="mailMessage.subject"/>
+    <field name="parentMailMessage.id"/>
+    <field name="parentMailMessage.note"/>
+    <field name="parentMailMessage.createdBy.name"/>
+    <field name="body"/>
+    <field name="$mailMessageFiles"/>
+    <field name="subject"/>
 
     <template>
 		<![CDATA[
 			<>
 			  <Box>
 			    <Box as="dl">
-			      <Box as="dt" display="flex" justifyContent="space-between" style={{ borderBottom: isPrivateNote ? "1px dotted red" : "1px dotted #d3d3d3" }}>
+			      <Box as="dt" display="flex" justifyContent="space-between" style={{ borderBottom: isPublicNote ? "1px dotted red" : "1px dotted #d3d3d3" }}>
 			        <span>
-			          {!mailMessage.subject ? _t('Record updated') : _t(mailMessage.subject)}{" "}
+			          {!subject ? _t('Record updated') : _t(subject)}{" "}
 			          <Link href={`#/ds/action-auth-users/edit/${createdBy.id}`} style={{ textDecoration: "none" }}>
 			            {createdBy.name}
 			          </Link>
@@ -103,23 +103,22 @@
 			          <Link href="#" title={$moment(createdOn).format("MM/DD/YYYY HH:mm")} style={{ textDecoration: "none" }}>
 			            {$moment(createdOn).fromNow()}
 			          </Link>
-			          {isPrivateNote && <Badge style={{ backgroundColor: "red", marginLeft: "5px" }}>Private</Badge>}
+			          {isPublicNote && <Badge style={{ backgroundColor: "red", marginLeft: "5px" }}>Public</Badge>}
 			        </span>
-			        <span>#{sequence}</span>
 			      </Box>
 
 			      {(() => {
 			        const renderHtml = (value) => <Box dangerouslySetInnerHTML={{ __html: value }} />;
 			        return (
 			          <>
-			            {parentComment.note && (
+			            {parentMailMessage.note && (
 						  <Box as="dd" bgColor='body-tertiary' style={{ padding: "10px", borderRadius: "5px", margin: "10px 0" }}>
-						    {renderHtml(parentComment.note)}
+						    {renderHtml(parentMailMessage.note)}
 						  </Box>
 						)}
 						<Box as="dd">
-						  {mailMessage.body.startsWith("{") && mailMessage.body.endsWith("}") ? (
-						    JSON.parse(mailMessage.body).tracks
+						  {body.startsWith("{") && body.endsWith("}") ? (
+						    JSON.parse(body).tracks
 						      .filter(track => track.title !== "comment.note")
 						      .map((track, index) => (
 						        <li key={index}>
@@ -130,21 +129,21 @@
 						        </li>
 						      ))
 						  ) : (
-						    <Box>{renderHtml(mailMessage.body)}</Box>
+						    <Box>{renderHtml(body)}</Box>
 						  )}
-						  <Box>{renderHtml($commentFiles)}</Box>
+						  <Box>{renderHtml($mailMessageFiles)}</Box>
 						</Box>
 			            <Box as="dd" display="flex" justifyContent="space-between" alignItems="center">
 			              {renderHtml(note)}
 			              {note && (
 			                <Box>
-			                  <Button variant="link" onClick={$action("action-comment-view-quote-note")}>
+			                  <Button variant="link" onClick={$action("action-mail-message-view-quote-note")}>
 			                    <Icon icon="quote" />
 			                  </Button>
-			                  <Button variant="link" onClick={$action("action-comment-view-edit-note")}>
+			                  <Button variant="link" onClick={$action("action-mail-message-view-edit-note")}>
 			                    <Icon icon="edit" />
 			                  </Button>
-			                  <Button variant="link" onClick={$action("action-comment-group-delete-note")}>
+			                  <Button variant="link" onClick={$action("action-mail-message-group-delete-note")}>
 			                    <Icon icon="delete" />
 			                  </Button>
 			                </Box>
@@ -161,18 +160,18 @@
 
   </cards>
 
-  <action-attrs name="action-comment-attrs-on-new">
-    <attribute name="value" for="parentComment" expr="eval: _parentComment"/>
+  <action-attrs name="action-mail-message-attrs-on-new">
+    <attribute name="value" for="parentMailMessage" expr="eval: _parentMailMessage"/>
   </action-attrs>
 
-  <action-attrs name="action-comment-attrs-is-private-note-on-change">
+  <action-attrs name="action-mail-message-attrs-is-public-note-on-change">
     <attribute name="title" for="note"
-      expr="eval: isPrivateNote ? '' : com.axelor.i18n.I18n.get('Note')"/>
+      expr="eval: isPublicNote ? '' : com.axelor.i18n.I18n.get('Note')"/>
   </action-attrs>
 
-  <action-view name="action-comment-view-edit-note" title="Edit a note"
-    model="com.axelor.apps.base.db.Comment">
-    <view type="form" name="comment-form"/>
+  <action-view name="action-mail-message-view-edit-note" title="Edit a note"
+    model="com.axelor.mail.db.MailMessage">
+    <view type="form" name="mail-message-form"/>
     <view-param name="popup" value="reload"/>
     <view-param name="popup-save" value="true"/>
     <view-param name="show-toolbar" value="false"/>
@@ -180,30 +179,30 @@
     <context name="_showRecord" expr="eval: id"/>
   </action-view>
 
-  <action-view name="action-comment-view-quote-note" title="Quote a note"
-    model="com.axelor.apps.base.db.Comment">
-    <view type="form" name="comment-form"/>
+  <action-view name="action-mail-message-view-quote-note" title="Quote a note"
+    model="com.axelor.mail.db.MailMessage">
+    <view type="form" name="mail-message-form"/>
     <view-param name="popup" value="reload"/>
     <view-param name="popup-save" value="true"/>
     <view-param name="show-toolbar" value="false"/>
     <view-param name="forceEdit" value="true"/>
-    <context name="_parentComment" expr="eval: __repo__(Comment).find(id)"
-      if="!parentComment.id"/>
-    <context name="_parentComment" expr="eval: __repo__(Comment).find(parentComment.id)"
-      if="parentComment.id"/>
+    <context name="_parentMailMessage" expr="eval: __repo__(MailMessage).find(id)"
+      if="!parentMailMessage.id"/>
+    <context name="_parentMailMessage"
+      expr="eval: __repo__(MailMessage).find(parentMailMessage.id)" if="parentMailMessage.id"/>
   </action-view>
 
-  <action-group name="action-comment-group-delete-note">
-    <action name="action-comment-validate-delete"/>
-    <action name="action-comment-method-delete-note"/>
+  <action-group name="action-mail-message-group-delete-note">
+    <action name="action-mail-message-validate-delete"/>
+    <action name="action-mail-message-method-delete-note"/>
   </action-group>
 
-  <action-validate name="action-comment-validate-delete">
+  <action-validate name="action-mail-message-validate-delete">
     <alert message="Are you sure?" confirm-btn-title="OK" cancel-btn-title="Cancel"/>
   </action-validate>
 
-  <action-method name="action-comment-method-delete-note">
-    <call class="com.axelor.apps.base.web.CommentController" method="deleteComment"/>
+  <action-method name="action-mail-message-method-delete-note">
+    <call class="com.axelor.apps.base.web.MailMessageController" method="deleteMailMessage"/>
   </action-method>
 
 </object-views>

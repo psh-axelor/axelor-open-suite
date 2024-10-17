@@ -16,44 +16,50 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.axelor.apps.project.service.comment;
+package com.axelor.apps.project.service.mail;
 
-import com.axelor.apps.base.db.CommentFile;
-import com.axelor.apps.base.db.repo.CommentFileRepository;
+import com.axelor.apps.base.db.MailMessageFile;
+import com.axelor.apps.base.db.repo.MailMessageFileRepository;
 import com.axelor.apps.project.db.ProjectTask;
+import com.axelor.apps.project.db.repo.ProjectTaskRepository;
 import com.axelor.mail.db.MailMessage;
 import com.axelor.mail.db.repo.MailMessageRepository;
 import com.axelor.meta.db.repo.MetaFileRepository;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 
-public class CommentFileServiceImpl implements CommentFileService {
+public class MailMessageFileServiceImpl implements MailMessageFileService {
 
   public MetaFileRepository metaFileRepo;
-  public CommentFileRepository commentFileRepo;
+  public MailMessageFileRepository mailMessageFileRepo;
   public MailMessageRepository mailMessageRepo;
+  public ProjectTaskRepository projectTaskRepo;
 
   @Inject
-  public CommentFileServiceImpl(
+  public MailMessageFileServiceImpl(
       MetaFileRepository metaFileRepo,
-      CommentFileRepository commentFileRepo,
-      MailMessageRepository mailMessageRepo) {
+      MailMessageFileRepository mailMessageFileRepo,
+      MailMessageRepository mailMessageRepo,
+      ProjectTaskRepository projectTaskRepo) {
 
     this.metaFileRepo = metaFileRepo;
-    this.commentFileRepo = commentFileRepo;
+    this.mailMessageFileRepo = mailMessageFileRepo;
     this.mailMessageRepo = mailMessageRepo;
+    this.projectTaskRepo = projectTaskRepo;
   }
 
   @Override
   @Transactional
-  public void deleteCommentFile(CommentFile commentFile) {
+  public void deleteMailMessageFile(MailMessageFile mailMessageFile) {
 
-    if (commentFile != null) {
-      ProjectTask projectTask = commentFile.getRelatedComment().getProjectTask();
+    if (mailMessageFile != null) {
+
+      ProjectTask projectTask =
+          projectTaskRepo.find(mailMessageFile.getRelatedMailMessage().getRelatedId());
       String body =
           "<ul><li>"
               + "(<del>"
-              + commentFile.getAttachmentFile().getFileName()
+              + mailMessageFile.getAttachmentFile().getFileName()
               + "</del>)"
               + "</li></ul>";
 
@@ -66,8 +72,8 @@ public class CommentFileServiceImpl implements CommentFileService {
 
       mailMessageRepo.save(message);
 
-      metaFileRepo.remove(commentFile.getAttachmentFile());
-      commentFileRepo.remove(commentFile);
+      metaFileRepo.remove(mailMessageFile.getAttachmentFile());
+      mailMessageFileRepo.remove(mailMessageFile);
     }
   }
 }

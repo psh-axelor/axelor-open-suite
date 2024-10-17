@@ -19,30 +19,31 @@
 package com.axelor.apps.base.db.repo;
 
 import com.axelor.app.AppSettings;
-import com.axelor.apps.base.db.Comment;
-import com.axelor.apps.base.db.CommentFile;
+import com.axelor.apps.base.db.MailMessageFile;
+import com.axelor.mail.db.MailMessage;
+import com.axelor.mail.db.repo.MailMessageRepository;
 import com.axelor.meta.db.MetaFile;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.collections.CollectionUtils;
 
-public class CommentBaseRepository extends CommentRepository {
+public class MailMessageBaseRepository extends MailMessageRepository {
 
   @Override
   public Map<String, Object> populate(Map<String, Object> json, Map<String, Object> context) {
 
-    Comment comment = this.find((Long) json.get("id"));
+    MailMessage mailMessage = this.find((Long) json.get("id"));
 
-    List<CommentFile> commentFileList = comment.getCommentFileList();
+    List<MailMessageFile> mailMessageFileList = mailMessage.getMailMessageFileList();
 
     StringBuilder sb = new StringBuilder();
 
-    if (CollectionUtils.isNotEmpty(commentFileList)) {
+    if (CollectionUtils.isNotEmpty(mailMessageFileList)) {
       String baseURL = AppSettings.get().getBaseURL();
       String urlFormat = "%s/ws/rest/com.axelor.meta.db.MetaFile/%d/content/download?v=%d";
 
-      for (CommentFile commentFile : commentFileList) {
-        MetaFile attachmentFile = commentFile.getAttachmentFile();
+      for (MailMessageFile mailMessageFile : mailMessageFileList) {
+        MetaFile attachmentFile = mailMessageFile.getAttachmentFile();
 
         if (attachmentFile != null) {
           sb.append("<li> ")
@@ -57,7 +58,7 @@ public class CommentBaseRepository extends CommentRepository {
       }
     }
 
-    json.put("$commentFiles", sb.toString());
+    json.put("$mailMessageFiles", sb.toString());
 
     return super.populate(json, context);
   }

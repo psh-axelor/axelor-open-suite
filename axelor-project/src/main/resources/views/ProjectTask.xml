@@ -117,7 +117,7 @@
       </panel>
     </panel>
     <panel-include view="incl-customized-field-panel-form"/>
-    <panel-include view="comment-file-preview-form"/>
+    <panel-include view="mail-message-file-preview-form"/>
     <panel-tabs name="mainPanelTab">
 
       <panel name="planningPanel" title="Planning" if="__config__.app.isApp('employee')"
@@ -189,22 +189,22 @@
   <form name="project-task-history-form" title="History"
     model="com.axelor.apps.project.db.ProjectTask" width="large">
 
-    <panel name="commentPanel" showTitle="false" showIf="id" colSpan="12">
+    <panel name="mailMessagePanel" showTitle="false" showIf="id" colSpan="12">
       <panel name="editPanel" title="Edit" colSpan="12" showIf="!$readonly()">
-        <field name="privateNoteLabel" x-dirty="false" readonly="true" showTitle="false"
-          showIf="isPrivateNote">
+        <field name="publicNoteLabel" x-dirty="false" readonly="true" showTitle="false"
+          showIf="isPublicNote">
           <viewer>
 	          <![CDATA[
 		          <>
-		          	{<Badge style={{ backgroundColor: "red" }}>Private Note</Badge>}
+		          	{<Badge style={{ backgroundColor: "red" }}>Public Note</Badge>}
 				  </>
 	          ]]>
           </viewer>
         </field>
         <field name="note" title="Note" colSpan="12" widget="html"/>
-        <field name="isPrivateNote" widget="boolean-switch"
-          onChange="action-comment-attrs-is-private-note-on-change"/>
-        <field name="commentFileList" title="Files" colSpan="12">
+        <field name="isPublicNote" widget="boolean-switch"
+          onChange="action-mail-message-attrs-is-public-note-on-change"/>
+        <field name="mailMessageFileList" title="Files" colSpan="12">
           <editor x-viewer="true">
             <field name="attachmentFile" showTitle="false" widget="binary-link"/>
             <field name="description" showTitle="false" widget="string"/>
@@ -228,11 +228,11 @@
   </form>
 
   <form model="com.axelor.apps.project.db.ProjectTask" title="Files"
-    name="comment-file-preview-form">
+    name="mail-message-file-preview-form">
 
-    <panel name="commentFilePreviewPanel" title="Files" showIf="id">
-      <field name="$commentFilePreviewList" showTitle="false" type="one-to-many"
-        target="com.axelor.apps.base.db.CommentFile" colSpan="12" x-dirty="true" readonly="true">
+    <panel name="mailMessageFilePreviewPanel" title="Files" showIf="id">
+      <field name="$mailMessageFilePreviewList" showTitle="false" type="one-to-many"
+        target="com.axelor.apps.base.db.MailMessageFile" colSpan="12" x-dirty="true" readonly="true">
         <viewer>
 			<![CDATA[
 				<>
@@ -244,10 +244,10 @@
 				  <span style={{ color: "#999" }}>
 				    {createdBy.fullName}, {$moment(createdOn).format("MM/DD/YYYY HH:mm")}
 				  </span>
-				  <Button variant="link" onClick={() => $execute("action-project-task-view-edit-comment-file")}>
+				  <Button variant="link" onClick={() => $execute("action-project-task-view-edit-mail-message-file")}>
 				    <Icon icon="edit" />
 				  </Button>
-				  <Button variant="link" onClick={() => $execute("action-project-task-group-delete-comment-file")}>
+				  <Button variant="link" onClick={() => $execute("action-project-task-group-delete-mail-message-file")}>
 				    <Icon icon="delete" />
 				  </Button>
 				</>
@@ -878,49 +878,52 @@
   </search-filters>
 
   <action-view name="action-project-task-dashlet-show-history" title="History"
-    model="com.axelor.apps.base.db.Comment">
-    <view type="cards" name="comment-card"/>
-    <view type="form" name="comment-form"/>
+    model="com.axelor.mail.db.MailMessage">
+    <view type="cards" name="mail-message-card"/>
+    <view type="form" name="mail-message-form"/>
     <view-param name="forceEdit" value="true"/>
-    <domain>self.projectTask.id = :id</domain>
+    <domain>self.relatedModel = 'com.axelor.apps.project.db.ProjectTask' and self.relatedId = :id</domain>
   </action-view>
 
-  <action-attrs id="project-task-action-comment-attrs-on-new"
-    name="action-comment-attrs-on-new">
-    <attribute name="value" for="parentComment" expr="eval: _parentComment"/>
-    <attribute name="value" for="projectTask" expr="eval: _projectTask"/>
-    <attribute name="value" for="sequence"
-      expr="eval: __repo__(Comment).all().filter('self.projectTask = ?1', _projectTask).count() + 1"/>
+  <action-attrs id="project-task-action-mail-message-attrs-on-new"
+    name="action-mail-message-attrs-on-new">
+    <attribute name="value" for="parentMailMessage" expr="eval: _parentMailMessage"/>
+    <attribute name="value" for="relatedId" expr="eval: _relatedId"/>
+    <attribute name="value" for="relatedModel" expr="eval: _relatedModel"/>
+    <attribute name="value" for="isPublicNote" expr="eval: _isPublicNote"/>
   </action-attrs>
 
   <action-group name="action-project-task-group-on-save">
     <action name="save"/>
-    <action name="action-project-task-method-create-comment-with-only-attachment"/>
+    <action name="action-project-task-method-create-mail-message-with-only-attachment"/>
   </action-group>
 
-  <action-method name="action-project-task-method-create-comment-with-only-attachment">
+  <action-method
+    name="action-project-task-method-create-mail-message-with-only-attachment">
     <call class="com.axelor.apps.project.web.ProjectTaskController"
       method="createCommentWithOnlyAttachment"/>
   </action-method>
 
-  <action-view id="project-task-action-comment-view-quote-note"
-    name="action-comment-view-quote-note" title="Quote a note"
-    model="com.axelor.apps.base.db.Comment">
-    <view type="form" name="comment-form"/>
+  <action-view id="project-task-action-mail-message-view-quote-note"
+    name="action-mail-message-view-quote-note" title="Quote a note"
+    model="com.axelor.mail.db.MailMessage">
+    <view type="form" name="mail-message-form"/>
     <view-param name="popup" value="reload"/>
     <view-param name="popup-save" value="true"/>
     <view-param name="show-toolbar" value="false"/>
     <view-param name="forceEdit" value="true"/>
-    <context name="_parentComment" expr="eval: __repo__(Comment).find(id)"
-      if="!parentComment.id"/>
-    <context name="_parentComment" expr="eval: __repo__(Comment).find(parentComment.id)"
-      if="parentComment.id"/>
-    <context name="_projectTask" expr="eval: projectTask"/>
+    <context name="_parentMailMessage" expr="eval: __repo__(MailMessage).find(id)"
+      if="!parentMailMessage.id"/>
+    <context name="_parentMailMessage"
+      expr="eval: __repo__(MailMessage).find(parentMailMessage.id)" if="parentMailMessage.id"/>
+    <context name="_relatedId" expr="eval: relatedId"/>
+    <context name="_relatedModel" expr="eval: relatedModel"/>
+    <context name="_isPublicNote" expr="eval: isPublicNote"/>
   </action-view>
 
-  <action-view name="action-project-task-view-edit-comment-file"
-    title="Edit attached file" model="com.axelor.apps.base.db.CommentFile">
-    <view type="form" name="comment-file-form"/>
+  <action-view name="action-project-task-view-edit-mail-message-file"
+    title="Edit attached file" model="com.axelor.apps.base.db.MailMessageFile">
+    <view type="form" name="mail-message-file-form"/>
     <view-param name="popup" value="reload"/>
     <view-param name="popup-save" value="true"/>
     <view-param name="show-toolbar" value="false"/>
@@ -928,13 +931,14 @@
     <context name="_showRecord" expr="eval: id"/>
   </action-view>
 
-  <action-group name="action-project-task-group-delete-comment-file">
-    <action name="action-comment-validate-delete"/>
+  <action-group name="action-project-task-group-delete-mail-message-file">
+    <action name="action-mail-message-validate-delete"/>
     <action name="action-project-task-method-delete-file"/>
   </action-group>
 
   <action-method name="action-project-task-method-delete-file">
-    <call class="com.axelor.apps.project.web.CommentFileController" method="deleteCommentFile"/>
+    <call class="com.axelor.apps.project.web.MailMessageFileController"
+      method="deleteMailMessageFile"/>
   </action-method>
 
 </object-views>

@@ -18,24 +18,51 @@
  */
 package com.axelor.apps.project.db.repo;
 
+import com.axelor.apps.base.db.repo.MailMessageBaseRepository;
 import com.axelor.apps.project.db.ProjectTask;
-import com.axelor.apps.project.service.comment.CommentProjectService;
+import com.axelor.apps.project.service.mail.MailMessageProjectService;
 import com.axelor.inject.Beans;
 import com.axelor.mail.db.MailMessage;
-import com.axelor.mail.db.repo.MailMessageRepository;
+import java.util.List;
+import org.apache.commons.collections.CollectionUtils;
 
-public class MailMessageProjectRepository extends MailMessageRepository {
+public class MailMessageProjectRepository extends MailMessageBaseRepository {
 
   @Override
   public MailMessage save(MailMessage entity) {
 
-    MailMessage message = super.save(entity);
-
-    if (message.getRelatedModel().equals(ProjectTask.class.getName())) {
-      ProjectTask projectTask = Beans.get(ProjectTaskRepository.class).find(message.getRelatedId());
-      Beans.get(CommentProjectService.class).createComment(projectTask, message);
+    if (entity.getRelatedModel().equals(ProjectTask.class.getName())) {
+      ProjectTask projectTask = Beans.get(ProjectTaskRepository.class).find(entity.getRelatedId());
+      entity = Beans.get(MailMessageProjectService.class).computeMailMessage(projectTask, entity);
     }
 
-    return message;
+    return super.save(entity);
+  }
+
+  @Override
+  public void remove(MailMessage entity) {
+
+    List<MailMessage> mailMessagetList =
+        all()
+            .filter(
+                "self.id != ?1 and self.relatedModel = ?2 and self.relatedId =?3",
+                entity.getId(),
+                entity.getRelatedModel(),
+                entity.getRelatedId())
+            .fetch();
+
+    if (CollectionUtils.isNotEmpty(mailMessagetList)) {
+
+      for (MailMessage mailMessage : mailMessagetList) {
+
+        if (entity.equals(mailMessage.getParentMailMessage())) {
+          mailMessage.setParentMailMessage(null);
+        }
+
+        save(mailMessage);
+      }
+    }
+
+    super.remove(entity);
   }
 }

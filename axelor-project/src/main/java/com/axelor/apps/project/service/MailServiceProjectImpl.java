@@ -52,15 +52,15 @@ public class MailServiceProjectImpl extends MailServiceHelpDeskImpl {
 
     if (!ObjectUtils.isEmpty(entityName) && entityName.equals(ProjectTask.class.getName())) {
       ProjectTask projectTask = Beans.get(ProjectTaskRepository.class).find(message.getRelatedId());
-      boolean isPrivateNote = projectTask.getIsPrivateNote();
+      boolean isPublicNote = projectTask.getIsPublicNote();
 
       Set<String> recipients = new LinkedHashSet<>();
 
-      if (isPrivateNote) {
-        recipients = getRecipients(projectTask.getInternalWatchers(), entityName, recipients);
-      } else {
+      if (isPublicNote) {
         recipients = getRecipients(projectTask.getInternalWatchers(), entityName, recipients);
         recipients = getRecipients(projectTask.getExternalWatchers(), entityName, recipients);
+      } else {
+        recipients = getRecipients(projectTask.getInternalWatchers(), entityName, recipients);
       }
 
       return recipients;

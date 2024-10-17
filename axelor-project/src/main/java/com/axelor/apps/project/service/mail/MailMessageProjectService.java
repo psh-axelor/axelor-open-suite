@@ -16,11 +16,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.axelor.apps.project.service.comment;
+package com.axelor.apps.project.service.mail;
 
-import com.axelor.apps.base.db.CommentFile;
+import com.axelor.apps.project.db.ProjectTask;
+import com.axelor.mail.db.MailMessage;
 
-public interface CommentFileService {
+public interface MailMessageProjectService {
 
-  public void deleteCommentFile(CommentFile commentFile);
+  public MailMessage computeMailMessage(ProjectTask projectTask, MailMessage message);
+
+  public void createMailMessageWithOnlyAttachment(ProjectTask projectTask);
 }

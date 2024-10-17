@@ -5,10 +5,12 @@
 
   <module name="base" package="com.axelor.apps.base.db"/>
 
-  <entity name="Comment">
+  <entity name="MailMessageFile">
 
-    <many-to-one ref="com.axelor.apps.project.db.ProjectTask" name="projectTask"
-      title="Project Task"/>
+    <many-to-one ref="com.axelor.meta.db.MetaFile" name="attachmentFile" title="File"/>
+    <string name="description" title="Description" large="true"/>
+    <many-to-one ref="com.axelor.mail.db.MailMessage" name="relatedMailMessage"
+      title="Related"/>
 
   </entity>
 

@@ -90,12 +90,10 @@
     <string name="projectJson" title="Project json" json="true"/>
     <string name="categoryJson" title="Category json" json="true"/>
 
-    <one-to-many name="commentList" ref="com.axelor.apps.base.db.Comment"
-      mappedBy="projectTask" title="Comment"/>
-    <one-to-many name="commentFileList" ref="com.axelor.apps.base.db.CommentFile"
-      title="Files"/>
+    <one-to-many name="mailMessageFileList"
+      ref="com.axelor.apps.base.db.MailMessageFile" title="Files"/>
     <string name="note" title="comment.note" large="true"/>
-    <boolean name="isPrivateNote" title="Private note" default="false" transient="true"/>
+    <boolean name="isPublicNote" title="Public note" default="false" transient="true"/>
     <many-to-many ref="com.axelor.auth.db.User" name="internalWatchers"
       title="Internal Watchers"/>
     <many-to-many ref="com.axelor.auth.db.User" name="externalWatchers"

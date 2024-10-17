@@ -16,24 +16,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.axelor.apps.project.web;
+package com.axelor.apps.base.web;
 
-import com.axelor.apps.base.db.CommentFile;
-import com.axelor.apps.base.db.repo.CommentFileRepository;
 import com.axelor.apps.base.service.exception.TraceBackService;
-import com.axelor.apps.project.service.comment.CommentFileService;
+import com.axelor.apps.base.service.mail.MailMessageService;
 import com.axelor.inject.Beans;
+import com.axelor.mail.db.MailMessage;
+import com.axelor.mail.db.repo.MailMessageRepository;
 import com.axelor.rpc.ActionRequest;
 import com.axelor.rpc.ActionResponse;
 
-public class CommentFileController {
+public class MailMessageController {
 
-  public void deleteCommentFile(ActionRequest request, ActionResponse response) {
+  public void deleteMailMessage(ActionRequest request, ActionResponse response) {
 
     try {
-      CommentFile commentFile = request.getContext().asType(CommentFile.class);
-      commentFile = Beans.get(CommentFileRepository.class).find(commentFile.getId());
-      Beans.get(CommentFileService.class).deleteCommentFile(commentFile);
+      MailMessage mailMessage = request.getContext().asType(MailMessage.class);
+      mailMessage = Beans.get(MailMessageRepository.class).find(mailMessage.getId());
+      Beans.get(MailMessageService.class).deleteMailMessage(mailMessage);
       response.setReload(true);
     } catch (Exception e) {
       TraceBackService.trace(response, e);
