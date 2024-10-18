@@ -185,6 +185,17 @@
     <field name="employee" form-view="employee-form" grid-view="employee-grid" hidden="true"/>
   </grid>
 
+  <grid model="com.axelor.apps.hr.db.TimesheetLine" title="Timesheet lines"
+    name="quick-timesheet-line-grid" editable="true">
+
+    <field name="projectTask"/>
+    <field name="date"/>
+    <field name="duration"/>
+    <field name="product" if="__config__.app.getApp('timesheet')?.enableActivity"/>
+    <field name="comments"/>
+
+  </grid>
+
   <form name="timesheet-line-project-form" title="Log Time"
     model="com.axelor.apps.hr.db.TimesheetLine"
     onNew="action-timesheet-line-group-project-form-on-new"
@@ -339,6 +350,19 @@
       <field name="enableEditor" if="__config__.app.getApp('timesheet')?.getTimesheetEditor()"/>
       <field name="hoursDuration" hidden="true"/>
     </panel>
+  </form>
+
+  <form model="com.axelor.apps.hr.db.TimesheetLine" title="Timesheet line"
+    name="quick-timesheet-line-form">
+
+    <panel name="mainPanel">
+      <field name="projectTask"/>
+      <field name="date"/>
+      <field name="duration"/>
+      <field name="product" if="__config__.app.getApp('timesheet')?.enableActivity"/>
+      <field name="comments" colSpan="12"/>
+    </panel>
+
   </form>
 
   <action-group name="action-timesheet-line-group-project-onchange">

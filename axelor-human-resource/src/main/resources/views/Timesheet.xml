@@ -261,6 +261,36 @@
     </panel>
   </form>
 
+  <form name="quick-timesheet-form" title="Quick timesheet" model="com.axelor.utils.db.Wizard"
+    onLoad="action-quick-timesheet-attrs-on-load" width="large">
+
+    <panel name="mainPanel">
+      <field name="employee" title="Employee" type="many-to-one"
+        target="com.axelor.apps.hr.db.Employee"
+        onChange="action-quick-timesheet-attrs-refresh-lines-panel" x-dirty="false"/>
+      <spacer name="dateSpacer"/>
+      <field name="date" title="Date" type="date"
+        onChange="action-quick-timesheet-attrs-refresh-lines-panel" x-dirty="false" colSpan="4"/>
+      <button name="previousBtn" icon="fa-arrow-left"
+        onClick="action-quick-timesheet-attrs-previous-date,action-quick-timesheet-attrs-refresh-lines-panel"
+        colSpan="1"/>
+      <button name="nextBtn" icon="fa-arrow-right"
+        onClick="action-quick-timesheet-attrs-next-date,action-quick-timesheet-attrs-refresh-lines-panel"
+        colSpan="1"/>
+      <field name="weekFromDate" title="Week from date" type="date" readonly="true"
+        colSpan="3"/>
+      <field name="weekToDate" title="Week to date" type="date" readonly="true" colSpan="3"/>
+      <panel-dashlet name="quickTSLinesPanel"
+        action="action-quick-timesheet-view-lines-based-on-date" title="Timesheet lines"
+        colSpan="12"/>
+      <field name="totalEntriesForDay" title="Total entries for day" type="integer"
+        readonly="true"/>
+      <field name="totalEntriesForWeek" title="Total entries for week" type="integer"
+        readonly="true"/>
+    </panel>
+
+  </form>
+
   <action-group name="action-timesheet-group-employee-onchange">
     <action name="action-timesheet-method-update-time-logging-preference"/>
     <action name="action-timesheet-attrs-set-visible-duration-title"/>
@@ -521,6 +551,29 @@
       expr="eval: __config__.app.getApp('production')?.getEnableTimesheetOnManufOrder()"/>
   </action-attrs>
 
+  <action-attrs name="action-quick-timesheet-attrs-on-load">
+    <attribute name="value" for="employee" expr="eval: __user__?.employee"/>
+    <attribute name="value" for="date" expr="eval: __date__"/>
+    <!-- temp -->
+    <attribute name="value" for="weekFromDate" expr="eval: __date__"/>
+    <attribute name="value" for="weekToDate" expr="eval: __date__"/>
+    <!-- temp -->
+  </action-attrs>
+
+  <action-attrs name="action-quick-timesheet-attrs-refresh-lines-panel">
+    <attribute name="refresh" for="quickTSLinesPanel" expr="eval: true"/>
+  </action-attrs>
+
+  <action-attrs name="action-quick-timesheet-attrs-next-date">
+    <attribute name="value" for="date" expr="eval: LocalDate.parse(date).plusDays(1)"
+      if="date"/>
+  </action-attrs>
+
+  <action-attrs name="action-quick-timesheet-attrs-previous-date">
+    <attribute name="value" for="date" expr="eval: LocalDate.parse(date).minusDays(1)"
+      if="date"/>
+  </action-attrs>
+
   <action-record name="action-timesheet-record-from-period-date"
     model="com.axelor.apps.hr.db.Timesheet">
     <field name="fromDate"
@@ -621,6 +674,16 @@
     <domain>self.timesheet.employee.user.id = :user_id AND self.timesheet.company = :company_id</domain>
     <context name="user_id" expr="eval: user_id"/>
     <context name="company_id" expr="eval: company_id"/>
+  </action-view>
+
+  <action-view name="action-quick-timesheet-view-lines-based-on-date"
+    title="Timesheet lines" model="com.axelor.apps.hr.db.TimesheetLine">
+    <view type="grid" name="quick-timesheet-line-grid"/>
+    <view type="form" name="quick-timesheet-line-form"/>
+    <view-param name="popup" value="true"/>
+    <view-param name="popup-save" value="true"/>
+    <view-param name="forceEdit" value="true"/>
+    <domain>self.employee = :employee AND self.date = :date</domain>
   </action-view>
 
   <action-method name="action-timesheet-method-all-timesheet-line">

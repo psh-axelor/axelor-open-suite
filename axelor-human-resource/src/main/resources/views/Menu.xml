@@ -742,4 +742,13 @@
 
   <!-- Sprint menus -->
 
+  <menuitem name="quick-timesheet" title="Quick timesheet" parent="hr-root"
+    action="quick.timesheet"/>
+
+  <action-view name="quick.timesheet" title="Quick timesheet"
+    model="com.axelor.utils.db.Wizard">
+    <view type="form" name="quick-timesheet-form"/>
+    <view-param name="forceEdit" value="true"/>
+  </action-view>
+
 </object-views>
