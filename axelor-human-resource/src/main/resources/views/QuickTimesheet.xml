@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<object-views xmlns="http://axelor.com/xml/ns/object-views"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_7.2.xsd">
+
+  <grid model="com.axelor.apps.hr.db.TimesheetLine" title="Timesheet lines"
+    name="quick-timesheet-line-grid">
+
+    <toolbar>
+      <button name="createBtn" title="New line" icon="fa-plus"
+        onClick="action-quick-timesheet-method-new-line"/>
+    </toolbar>
+
+    <field name="projectTask"/>
+    <field name="date"/>
+    <field name="duration" onChange="action-timesheet-line-method-set-stored-duration"/>
+    <field name="product" onSelect="action-hr-timesheet-line-attrs-domain-product"
+      if="__config__.app.getApp('timesheet')?.enableActivity"/>
+    <field name="comments"/>
+
+  </grid>
+
+  <form model="com.axelor.apps.hr.db.TimesheetLine" title="Timesheet line"
+    name="quick-timesheet-line-form"
+    onNew="action-quick-timesheet-attrs-on-new,action-timesheet-line-attrs-set-duration-label"
+    onLoad="action-timesheet-line-attrs-set-duration-label">
+
+    <panel name="mainPanel">
+      <field name="projectTask"/>
+      <field name="date"/>
+      <field name="duration" onChange="action-timesheet-line-method-set-stored-duration"/>
+      <label name="durationLabel"/>
+      <field name="product" onSelect="action-hr-timesheet-line-attrs-domain-product"
+        if="__config__.app.getApp('timesheet')?.enableActivity"/>
+      <field name="comments" colSpan="12"/>
+    </panel>
+
+  </form>
+
+  <form name="quick-timesheet-form" title="Quick timesheet" model="com.axelor.utils.db.Wizard"
+    width="large">
+
+    <panel name="mainPanel">
+      <field name="employee" title="Employee" type="many-to-one"
+        target="com.axelor.apps.hr.db.Employee"
+        onChange="action-quick-timesheet-group-on-change-common" x-dirty="false"/>
+      <spacer name="dateSpacer"/>
+      <field name="date" title="Date" type="date"
+        onChange="action-quick-timesheet-method-week-from-to-dates,action-quick-timesheet-group-on-change-common"
+        x-dirty="false" colSpan="4"/>
+      <button name="previousBtn" icon="fa-arrow-left"
+        onClick="action-quick-timesheet-method-previous-date,action-quick-timesheet-group-on-change-common"
+        colSpan="1"/>
+      <button name="nextBtn" icon="fa-arrow-right"
+        onClick="action-quick-timesheet-method-next-date,action-quick-timesheet-group-on-change-common"
+        colSpan="1"/>
+      <field name="weekFromDate" title="Week from date" type="date" readonly="true"
+        x-dirty="false" colSpan="3"/>
+      <field name="weekToDate" title="Week to date" type="date" readonly="true"
+        x-dirty="false" colSpan="3"/>
+      <label name="leaveHolidayLabel" title="Leave / Public Holiday" css="label-danger"
+        hidden="true"/>
+    </panel>
+    <panel-dashlet name="quickTSLinesPanel"
+      action="action-quick-timesheet-method-view-lines" title="Timesheet lines" x-show-bars="true"/>
+    <panel name="totalsPanel" title="Totals">
+      <field name="totalTimeEntryForDay" title="Total time entry for day (hours)"
+        type="decimal" x-dirty="false" readonly="true"/>
+      <field name="totalTimeEntryForWeek" title="Total time entry for week (hours)"
+        type="decimal" x-dirty="false" readonly="true"/>
+      <field name="totalLeaveAndHolidayForDay"
+        title="Total leave and public holiday for day (days)" type="decimal" x-dirty="false"
+        readonly="true"/>
+      <field name="totalLeaveAndHolidayForWeek"
+        title="Total leave and public holiday for week (days)" type="decimal" x-dirty="false"
+        readonly="true"/>
+    </panel>
+
+  </form>
+
+  <action-attrs name="action-quick-timesheet-attrs-refresh-lines-panel">
+    <attribute name="refresh" for="quickTSLinesPanel" expr="eval: true"/>
+  </action-attrs>
+
+  <action-attrs name="action-quick-timesheet-attrs-on-new">
+    <attribute name="value" for="timesheet" expr="eval: _timesheet"/>
+    <attribute name="value" for="employee" expr="eval: _employee"/>
+    <attribute name="value" for="date" expr="eval: _date"/>
+    <attribute name="value" for="product" expr="eval: _product"/>
+    <attribute name="readonly" for="date" expr="eval: true"/>
+  </action-attrs>
+
+  <action-method name="action-quick-timesheet-method-week-from-to-dates">
+    <call class="com.axelor.apps.hr.web.timesheet.QuickTimesheetController"
+      method="weekFromToDates"/>
+  </action-method>
+
+  <action-method name="action-quick-timesheet-method-previous-date">
+    <call class="com.axelor.apps.hr.web.timesheet.QuickTimesheetController"
+      method="previousDate"/>
+  </action-method>
+
+  <action-method name="action-quick-timesheet-method-next-date">
+    <call class="com.axelor.apps.hr.web.timesheet.QuickTimesheetController" method="nextDate"/>
+  </action-method>
+
+  <action-method name="action-quick-timesheet-method-view-lines">
+    <call class="com.axelor.apps.hr.web.timesheet.QuickTimesheetController" method="viewLines"/>
+  </action-method>
+
+  <action-method name="action-quick-timesheet-method-compute-totals">
+    <call class="com.axelor.apps.hr.web.timesheet.QuickTimesheetController"
+      method="computeTotals"/>
+  </action-method>
+
+  <action-method name="action-quick-timesheet-method-leave-holiday-label">
+    <call class="com.axelor.apps.hr.web.timesheet.QuickTimesheetController"
+      method="leaveHolidayLabel"/>
+  </action-method>
+
+  <action-method name="action-quick-timesheet-method-new-line">
+    <call class="com.axelor.apps.hr.web.timesheet.QuickTimesheetController" method="newLine"/>
+  </action-method>
+
+  <action-group name="action-quick-timesheet-group-on-change-common">
+    <action name="action-quick-timesheet-attrs-refresh-lines-panel"/>
+    <action name="action-quick-timesheet-method-compute-totals"/>
+    <action name="action-quick-timesheet-method-leave-holiday-label"/>
+  </action-group>
+
+</object-views>

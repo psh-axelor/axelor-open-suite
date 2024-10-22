@@ -194,6 +194,8 @@ import com.axelor.apps.hr.service.sprint.AllocationLineService;
 import com.axelor.apps.hr.service.sprint.AllocationLineServiceImpl;
 import com.axelor.apps.hr.service.sprint.SprintHRService;
 import com.axelor.apps.hr.service.sprint.SprintHRServiceImpl;
+import com.axelor.apps.hr.service.timesheet.QuickTimesheetService;
+import com.axelor.apps.hr.service.timesheet.QuickTimesheetServiceImpl;
 import com.axelor.apps.hr.service.timesheet.TimesheetCheckResponseService;
 import com.axelor.apps.hr.service.timesheet.TimesheetCheckResponseServiceImpl;
 import com.axelor.apps.hr.service.timesheet.TimesheetComputeNameService;
@@ -381,5 +383,6 @@ public class HumanResourceModule extends AxelorModule {
     bind(SprintServiceImpl.class).to(SprintHRServiceImpl.class);
     bind(AllocationLineService.class).to(AllocationLineServiceImpl.class);
     bind(SprintRepository.class).to(SprintHRRepository.class);
+    bind(QuickTimesheetService.class).to(QuickTimesheetServiceImpl.class);
   }
 }

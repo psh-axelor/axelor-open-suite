@@ -43,6 +43,13 @@
 
     <entity-listener class="com.axelor.apps.hr.db.repo.TimesheetLineListener"/>
 
+    <finder-method name="findByEmployeeAndProjectTaskAndDate"
+      using="employee,projectTask,date"/>
+    <finder-method name="findByEmployeeAndDate" using="employee,date" all="true"/>
+    <finder-method name="findByEmployeeAndDates"
+      using="employee,LocalDate:fromDate,LocalDate:toDate"
+      filter="self.employee = :employee AND self.date between :fromDate and :toDate" all="true"/>
+
   </entity>
 
 </domain-models>

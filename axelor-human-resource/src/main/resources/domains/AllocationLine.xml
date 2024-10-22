@@ -21,6 +21,9 @@
     <finder-method name="findBySprintAndPeriodAndUser"
       using="sprint,allocationPeriod,user"/>
     <finder-method name="findByPeriodAndUser" using="allocationPeriod,user" all="true"/>
+    <finder-method name="findByUserAndDate" using="user,LocalDate:date"
+      filter="self.user = :user and :date between self.allocationPeriod.fromDate and self.allocationPeriod.toDate"
+      all="true"/>
 
   </entity>
 
