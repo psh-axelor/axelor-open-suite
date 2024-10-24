@@ -78,11 +78,10 @@ public class ProjectMenuController {
     ActionView.ActionViewBuilder actionViewBuilder =
         ActionView.define(I18n.get("Allocation lines"))
             .model(AllocationLine.class.getName())
-            .add("grid", "allocation-line-sprint-grid")
+            .add("grid", "allocation-line-project-grid")
             .add("form", "allocation-line-form")
-            .domain(
-                "self.sprint in :_sprintList and self.allocationPeriod in :_allocationPeriodSet")
-            .context("_sprintList", sprintList)
+            .domain("self.project = :_project and self.allocationPeriod in :_allocationPeriodSet")
+            .context("_project", project)
             .context("_allocationPeriodSet", allocationPeriodSet);
 
     response.setView(actionViewBuilder.map());

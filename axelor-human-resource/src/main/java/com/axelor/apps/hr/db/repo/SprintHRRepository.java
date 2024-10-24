@@ -21,7 +21,9 @@ package com.axelor.apps.hr.db.repo;
 import com.axelor.apps.project.db.AllocationLine;
 import com.axelor.apps.project.db.ProjectTask;
 import com.axelor.apps.project.db.Sprint;
+import com.axelor.apps.project.db.repo.AllocationLineRepository;
 import com.axelor.apps.project.db.repo.SprintRepository;
+import com.axelor.inject.Beans;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
@@ -40,7 +42,10 @@ public class SprintHRRepository extends SprintRepository {
     BigDecimal totalPlannedTime = BigDecimal.ZERO;
     BigDecimal totalRemainingTime = BigDecimal.ZERO;
 
-    List<AllocationLine> allocationLineList = sprint.getAllocationLineList();
+    List<AllocationLine> allocationLineList =
+        Beans.get(AllocationLineRepository.class)
+            .findByProjectAndPeriods(sprint.getProject(), sprint.getAllocationPeriodSet())
+            .fetch();
 
     if (CollectionUtils.isNotEmpty(allocationLineList)) {
 
