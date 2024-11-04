@@ -59,8 +59,9 @@ public class ProjectTaskLinkServiceImpl implements ProjectTaskLinkService {
     }
 
     return String.format(
-        "self.id NOT IN (%s)",
-        unselectableTaskIdList.stream().map(String::valueOf).collect(Collectors.joining(",")));
+        "self.id NOT IN (%s) and self.typeSelect = '%s'",
+        unselectableTaskIdList.stream().map(String::valueOf).collect(Collectors.joining(",")),
+        projectTask.getTypeSelect());
   }
 
   @Override

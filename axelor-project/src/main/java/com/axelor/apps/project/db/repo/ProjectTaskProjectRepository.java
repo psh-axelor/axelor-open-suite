@@ -19,6 +19,7 @@
 package com.axelor.apps.project.db.repo;
 
 import com.axelor.apps.base.db.Frequency;
+import com.axelor.apps.base.db.repo.MailMessageFileRepository;
 import com.axelor.apps.project.db.Project;
 import com.axelor.apps.project.db.ProjectTask;
 import com.axelor.apps.project.exception.ProjectExceptionMessage;
@@ -170,5 +171,25 @@ public class ProjectTaskProjectRepository extends ProjectTaskRepository {
     task.setTaskEndDate(null);
     task.setMetaFile(null);
     return task;
+  }
+
+  @Override
+  public Map<String, Object> populate(Map<String, Object> json, Map<String, Object> context) {
+
+    ProjectTask projectTask = this.find((Long) json.get("id"));
+
+    if (!context.containsKey("_model")) {
+      json.put(
+          "$mailMessageFilePreviewList",
+          Beans.get(MailMessageFileRepository.class)
+              .all()
+              .filter(
+                  "self.relatedMailMessage.relatedModel = ?1 and self.relatedMailMessage.relatedId = ?2",
+                  ProjectTask.class.getName(),
+                  projectTask.getId())
+              .fetch());
+    }
+
+    return super.populate(json, context);
   }
 }

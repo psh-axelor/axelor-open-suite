@@ -19,6 +19,10 @@
 package com.axelor.apps.project.module;
 
 import com.axelor.app.AxelorModule;
+import com.axelor.apps.base.db.repo.MailMessageBaseRepository;
+import com.axelor.apps.base.service.mail.MailMessageServiceImpl;
+import com.axelor.apps.helpdesk.service.MailServiceHelpDeskImpl;
+import com.axelor.apps.project.db.repo.MailMessageProjectRepository;
 import com.axelor.apps.project.db.repo.ProjectManagementRepository;
 import com.axelor.apps.project.db.repo.ProjectRepository;
 import com.axelor.apps.project.db.repo.ProjectTaskLinkTypeManagementRepository;
@@ -33,6 +37,7 @@ import com.axelor.apps.project.db.repo.TeamProjectRepository;
 import com.axelor.apps.project.db.repo.WikiProjectRepository;
 import com.axelor.apps.project.db.repo.WikiRepository;
 import com.axelor.apps.project.quickmenu.ActiveProjectQuickMenuCreator;
+import com.axelor.apps.project.service.MailServiceProjectImpl;
 import com.axelor.apps.project.service.MetaJsonFieldProjectService;
 import com.axelor.apps.project.service.MetaJsonFieldProjectServiceImpl;
 import com.axelor.apps.project.service.ProjectActivityDashboardService;
@@ -71,6 +76,10 @@ import com.axelor.apps.project.service.app.AppProjectService;
 import com.axelor.apps.project.service.app.AppProjectServiceImpl;
 import com.axelor.apps.project.service.config.ProjectConfigService;
 import com.axelor.apps.project.service.config.ProjectConfigServiceImpl;
+import com.axelor.apps.project.service.mail.MailMessageFileService;
+import com.axelor.apps.project.service.mail.MailMessageFileServiceImpl;
+import com.axelor.apps.project.service.mail.MailMessageProjectService;
+import com.axelor.apps.project.service.mail.MailMessageProjectServiceImpl;
 import com.axelor.apps.project.service.taskLink.ProjectTaskLinkService;
 import com.axelor.apps.project.service.taskLink.ProjectTaskLinkServiceImpl;
 import com.axelor.apps.project.service.taskLink.ProjectTaskLinkTypeService;
@@ -111,5 +120,11 @@ public class ProjectModule extends AxelorModule {
     bind(UserProjectService.class).to(UserProjectServiceImpl.class);
     addQuickMenu(ActiveProjectQuickMenuCreator.class);
     bind(ProjectToolService.class).to(ProjectToolServiceImpl.class);
+
+    bind(MailMessageBaseRepository.class).to(MailMessageProjectRepository.class);
+    bind(MailMessageProjectService.class).to(MailMessageProjectServiceImpl.class);
+    bind(MailMessageServiceImpl.class).to(MailMessageProjectServiceImpl.class);
+    bind(MailMessageFileService.class).to(MailMessageFileServiceImpl.class);
+    bind(MailServiceHelpDeskImpl.class).to(MailServiceProjectImpl.class);
   }
 }

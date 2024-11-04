@@ -46,6 +46,7 @@ import com.axelor.apps.base.db.repo.LanguageBaseRepository;
 import com.axelor.apps.base.db.repo.LanguageRepository;
 import com.axelor.apps.base.db.repo.MailBatchBaseRepository;
 import com.axelor.apps.base.db.repo.MailBatchRepository;
+import com.axelor.apps.base.db.repo.MailMessageBaseRepository;
 import com.axelor.apps.base.db.repo.MailingListMessageBaseRepository;
 import com.axelor.apps.base.db.repo.MailingListMessageRepository;
 import com.axelor.apps.base.db.repo.PartnerAddressRepository;
@@ -209,6 +210,8 @@ import com.axelor.apps.base.service.imports.ImportConfigurationService;
 import com.axelor.apps.base.service.imports.ImportConfigurationServiceImpl;
 import com.axelor.apps.base.service.imports.ImportDemoDataService;
 import com.axelor.apps.base.service.imports.ImportDemoDataServiceImpl;
+import com.axelor.apps.base.service.mail.MailMessageService;
+import com.axelor.apps.base.service.mail.MailMessageServiceImpl;
 import com.axelor.apps.base.service.message.MailAccountServiceBaseImpl;
 import com.axelor.apps.base.service.message.MessageBaseService;
 import com.axelor.apps.base.service.message.MessageServiceBaseImpl;
@@ -286,6 +289,7 @@ import com.axelor.auth.service.PermissionService;
 import com.axelor.auth.service.PermissionServiceImpl;
 import com.axelor.base.service.ical.ICalendarEventService;
 import com.axelor.base.service.ical.ICalendarEventServiceImpl;
+import com.axelor.mail.db.repo.MailMessageRepository;
 import com.axelor.message.service.MailAccountServiceImpl;
 import com.axelor.message.service.MailServiceMessageImpl;
 import com.axelor.message.service.MessageServiceImpl;
@@ -485,5 +489,8 @@ public class BaseModule extends AxelorModule {
     bind(DataSharingReferentialLineService.class).to(DataSharingReferentialLineServiceImpl.class);
     bind(MetaViewService.class).to(MetaViewServiceImpl.class);
     bind(DataSharingProductWizardService.class).to(DataSharingProductWizardServiceImpl.class);
+
+    bind(MailMessageService.class).to(MailMessageServiceImpl.class);
+    bind(MailMessageRepository.class).to(MailMessageBaseRepository.class);
   }
 }
