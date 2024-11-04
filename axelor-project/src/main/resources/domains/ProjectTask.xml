@@ -93,6 +93,15 @@
       ref="com.axelor.apps.project.db.ProjectCheckListItem" title="Check list"
       mappedBy="projectTask"/>
 
+    <!-- History fields -->
+
+    <one-to-many name="mailMessageFileList"
+      ref="com.axelor.apps.base.db.MailMessageFile" title="Files"/>
+    <string name="note" title="comment.note" large="true"/>
+    <boolean name="isPublicNote" title="Public note" default="false" transient="true"/>
+
+    <!-- History fields -->
+
     <extra-code>
 
       // TYPE SELECT
@@ -111,6 +120,7 @@
       <field name="projectTaskCategory"/>
       <field name="progress"/>
       <field name="assignedTo"/>
+      <field name="note"/>
     </track>
 
   </entity>

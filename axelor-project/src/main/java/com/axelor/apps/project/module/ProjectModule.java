@@ -19,6 +19,8 @@
 package com.axelor.apps.project.module;
 
 import com.axelor.app.AxelorModule;
+import com.axelor.apps.base.db.repo.MailMessageBaseRepository;
+import com.axelor.apps.project.db.repo.MailMessageProjectRepository;
 import com.axelor.apps.project.db.repo.ProjectManagementRepository;
 import com.axelor.apps.project.db.repo.ProjectRepository;
 import com.axelor.apps.project.db.repo.ProjectTaskLinkTypeManagementRepository;
@@ -75,6 +77,8 @@ import com.axelor.apps.project.service.app.AppProjectService;
 import com.axelor.apps.project.service.app.AppProjectServiceImpl;
 import com.axelor.apps.project.service.config.ProjectConfigService;
 import com.axelor.apps.project.service.config.ProjectConfigServiceImpl;
+import com.axelor.apps.project.service.mail.MailMessageProjectService;
+import com.axelor.apps.project.service.mail.MailMessageProjectServiceImpl;
 import com.axelor.apps.project.service.taskLink.ProjectTaskLinkService;
 import com.axelor.apps.project.service.taskLink.ProjectTaskLinkServiceImpl;
 import com.axelor.apps.project.service.taskLink.ProjectTaskLinkTypeService;
@@ -117,5 +121,7 @@ public class ProjectModule extends AxelorModule {
     bind(ProjectToolService.class).to(ProjectToolServiceImpl.class);
     bind(ProjectTaskAttrsService.class).to(ProjectTaskAttrsServiceImpl.class);
     bind(ProjectCheckListTemplateService.class).to(ProjectCheckListTemplateServiceImpl.class);
+    bind(MailMessageBaseRepository.class).to(MailMessageProjectRepository.class);
+    bind(MailMessageProjectService.class).to(MailMessageProjectServiceImpl.class);
   }
 }

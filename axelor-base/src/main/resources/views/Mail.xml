@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<object-views xmlns="http://axelor.com/xml/ns/object-views"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_7.1.xsd">
+
+  <form name="mail-message-form" title="Comment" model="com.axelor.mail.db.MailMessage"
+    onLoad="action-mail-message-attrs-is-public-note-on-change" width="large">
+
+    <panel name="mainPanel">
+      <field name="body" showTitle="false" readonly="true" colSpan="12">
+        <viewer>
+        <![CDATA[
+          <>
+            {(() => {
+              const renderHtml = (value) => (
+                <Box dangerouslySetInnerHTML={{ __html: value }} />
+              );
+
+              return (
+                <>
+                  <Box as="dd">
+                    {body.startsWith("{") && body.endsWith("}") ? (
+                      JSON.parse(body).tracks
+                        .filter(track => track.title !== "comment.note")
+                        .map((track, index) => (
+                          <li key={index}>
+                            <strong>{_t(track.title)}</strong> :
+                            {track.oldDisplayValue && <span> {_t(track.oldDisplayValue)} &raquo; </span>}
+                            {track.oldValue && !track.oldDisplayValue && <span> {_t(track.oldValue)} &raquo; </span>}
+                            <span> {_t(track.displayValue) || _t(track.value)} </span>
+                          </li>
+                        ))
+                    ) : (
+                      <Box>{renderHtml(body)}</Box>
+                    )}
+                    <Box>{renderHtml($mailMessageFiles)}</Box>
+                  </Box>
+                </>
+              );
+            })()}
+          </>
+        ]]>
+        </viewer>
+      </field>
+      <field name="publicNoteLabel" readonly="true" showTitle="false" showIf="isPublicNote">
+        <viewer>
+        <![CDATA[
+          <>
+            {<Badge style={{ backgroundColor: "red" }}>Public Note</Badge>}
+          </>
+        ]]>
+        </viewer>
+      </field>
+      <field name="note" title="Note" widget="html" hideIf="$readonly() &amp;&amp; !note"
+        colSpan="12"/>
+      <field name="isPublicNote" hidden="true"/>
+    </panel>
+
+  </form>
+
+  <cards name="mail-message-card" model="com.axelor.mail.db.MailMessage" title="Comment"
+    css="rect-image" width="100%" orderBy="-createdOn" canEdit="false" canDelete="false">
+
+    <field name="note"/>
+    <field name="isPublicNote"/>
+    <field name="createdBy.name"/>
+    <field name="createdBy.id"/>
+    <field name="createdOn"/>
+    <field name="body"/>
+    <field name="$mailMessageFiles"/>
+    <field name="subject"/>
+
+    <template>
+		<![CDATA[
+			<>
+			  <Box>
+			    <Box as="dl">
+			      <Box as="dt" display="flex" justifyContent="space-between" style={{ borderBottom: isPublicNote ? "1px dotted red" : "1px dotted #d3d3d3" }}>
+			        <span>
+			          {!subject ? _t('Record updated') : _t(subject)}{" "}
+			          <Link href={`#/ds/action-auth-users/edit/${createdBy.id}`} style={{ textDecoration: "none" }}>
+			            {createdBy.name}
+			          </Link>
+			          {" - "}
+			          <Link href="#" title={$moment(createdOn).format("MM/DD/YYYY HH:mm")} style={{ textDecoration: "none" }}>
+			            {$moment(createdOn).fromNow()}
+			          </Link>
+			          {isPublicNote && <Badge style={{ backgroundColor: "red", marginLeft: "5px" }}>Public</Badge>}
+			        </span>
+			      </Box>
+
+			      {(() => {
+			        const renderHtml = (value) => <Box dangerouslySetInnerHTML={{ __html: value }} />;
+			        return (
+			          <>
+						<Box as="dd">
+						  {body.startsWith("{") && body.endsWith("}") ? (
+						    JSON.parse(body).tracks
+						      .filter(track => track.title !== "comment.note")
+						      .map((track, index) => (
+						        <li key={index}>
+						          <strong>{_t(track.title)}</strong> :
+						          {track.oldDisplayValue && <span> {_t(track.oldDisplayValue)} &raquo; </span>}
+						          {track.oldValue && !track.oldDisplayValue && <span> {_t(track.oldValue)} &raquo; </span>}
+						          <span> {_t(track.displayValue) || _t(track.value)} </span>
+						        </li>
+						      ))
+						  ) : (
+						    <Box>{renderHtml(body)}</Box>
+						  )}
+						  <Box>{renderHtml($mailMessageFiles)}</Box>
+						</Box>
+			            <Box as="dd" display="flex" justifyContent="space-between" alignItems="center">
+			              {renderHtml(note)}
+			            </Box>
+			          </>
+			        );
+			      })()}
+			    </Box>
+			  </Box>
+			</>
+		]]>
+    </template>
+
+  </cards>
+
+  <action-attrs name="action-mail-message-attrs-is-public-note-on-change">
+    <attribute name="title" for="note"
+      expr="eval: isPublicNote ? '' : com.axelor.i18n.I18n.get('Note')"/>
+  </action-attrs>
+
+</object-views>

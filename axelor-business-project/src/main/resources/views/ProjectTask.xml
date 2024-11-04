@@ -300,10 +300,7 @@
     <panel name="attrsPanel">
       <field name="attrs" colSpan="12"/>
     </panel>
-    <panel-mail name="mailPanel">
-      <mail-messages/>
-      <mail-followers/>
-    </panel-mail>
+    <panel-include view="project-task-history-form"/>
   </form>
 
   <form title="Financial datas" name="business-project-task-financial-datas-form"

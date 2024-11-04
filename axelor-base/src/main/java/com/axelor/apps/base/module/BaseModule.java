@@ -48,6 +48,7 @@ import com.axelor.apps.base.db.repo.LanguageBaseRepository;
 import com.axelor.apps.base.db.repo.LanguageRepository;
 import com.axelor.apps.base.db.repo.MailBatchBaseRepository;
 import com.axelor.apps.base.db.repo.MailBatchRepository;
+import com.axelor.apps.base.db.repo.MailMessageBaseRepository;
 import com.axelor.apps.base.db.repo.MailingListMessageBaseRepository;
 import com.axelor.apps.base.db.repo.MailingListMessageRepository;
 import com.axelor.apps.base.db.repo.PartnerAddressRepository;
@@ -300,6 +301,7 @@ import com.axelor.auth.service.PermissionService;
 import com.axelor.auth.service.PermissionServiceImpl;
 import com.axelor.base.service.ical.ICalendarEventService;
 import com.axelor.base.service.ical.ICalendarEventServiceImpl;
+import com.axelor.mail.db.repo.MailMessageRepository;
 import com.axelor.message.service.MailAccountServiceImpl;
 import com.axelor.message.service.MailServiceMessageImpl;
 import com.axelor.message.service.MessageServiceImpl;
@@ -507,5 +509,6 @@ public class BaseModule extends AxelorModule {
     bind(DataSharingProductWizardRepository.class)
         .to(DataSharingProductWizardManagementRepository.class);
     bind(LanguageCheckerService.class).to(LanguageCheckerServiceImpl.class);
+    bind(MailMessageRepository.class).to(MailMessageBaseRepository.class);
   }
 }

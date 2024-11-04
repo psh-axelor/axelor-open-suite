@@ -324,6 +324,71 @@
     </panel>
   </form>
 
+  <!-- History views -->
+
+  <form name="project-task-history-form" title="History"
+    model="com.axelor.apps.project.db.ProjectTask" width="large">
+
+    <panel-include view="mail-message-file-preview-form"/>
+    <panel name="mailMessagePanel" showTitle="false" showIf="id" colSpan="12">
+      <panel name="editPanel" title="Edit" colSpan="12" showIf="!$readonly()">
+        <field name="publicNoteLabel" readonly="true" showTitle="false" showIf="isPublicNote">
+          <viewer>
+	          <![CDATA[
+		          <>
+		          	{<Badge style={{ backgroundColor: "red" }}>Public Note</Badge>}
+				  </>
+	          ]]>
+          </viewer>
+        </field>
+        <field name="note" title="Note" colSpan="12" widget="html"/>
+        <field name="isPublicNote" widget="boolean-switch"
+          onChange="action-mail-message-attrs-is-public-note-on-change"/>
+        <field name="mailMessageFileList" title="Files" colSpan="12">
+          <editor x-viewer="true">
+            <field name="attachmentFile" showTitle="false" widget="binary-link"/>
+            <field name="description" showTitle="false" widget="string"/>
+          </editor>
+        </field>
+        <button onClick="action-project-task-group-on-save" name="submitBtn" title="Submit"
+          colSpan="1"/>
+      </panel>
+      <panel name="historyPanel" title="History" showTitle="false" colSpan="12">
+        <panel-dashlet action="action-project-task-dashlet-show-history"
+          name="showHistoryPanel" colSpan="12"/>
+      </panel>
+    </panel>
+
+  </form>
+
+  <form model="com.axelor.apps.project.db.ProjectTask" title="Files"
+    name="mail-message-file-preview-form" width="large">
+
+    <panel name="mailMessageFilePreviewPanel" title="Files" collapseIf="true" showIf="id"
+      colSpan="12">
+      <field name="$mailMessageFilePreviewList" showTitle="false" type="one-to-many"
+        target="com.axelor.apps.base.db.MailMessageFile" colSpan="12" readonly="true">
+        <viewer>
+			<![CDATA[
+				<>
+				  <Icon icon="attachment" />
+				  <Link href={`ws/rest/com.axelor.meta.db.MetaFile/${attachmentFile.id}/content/download?v=${attachmentFile.$version}`} style={{ textDecoration: "none" }}>
+				    {attachmentFile.fileName}
+				  </Link>{" "}
+				  {description && `${description}`}{" "}
+				  <span style={{ color: "#999" }}>
+				    {createdBy.fullName}, {$moment(createdOn).format("MM/DD/YYYY HH:mm")}
+				  </span>
+				</>
+			]]>
+        </viewer>
+      </field>
+    </panel>
+
+  </form>
+
+  <!-- History views -->
+
   <gantt name="task-gantt" title="Tasks" model="com.axelor.apps.project.db.ProjectTask"
     taskStart="taskDate" taskEnd="taskEndDate" taskDuration="durationHours" taskParent="parentTask"
     taskSequence="sequence" taskProgress="plannedProgress" x-start-to-start="startToStartSet"
@@ -847,6 +912,29 @@
     <error message="Please fill completed task status in Project configuration."
       if="!project?.completedTaskStatus"/>
   </action-validate>
+
+  <!-- History actions -->
+
+  <action-group name="action-project-task-group-on-save">
+    <action name="save"/>
+    <action name="action-project-task-method-create-mail-message-with-only-attachment"/>
+  </action-group>
+
+  <action-method
+    name="action-project-task-method-create-mail-message-with-only-attachment">
+    <call class="com.axelor.apps.project.web.ProjectTaskController"
+      method="createCommentWithOnlyAttachment"/>
+  </action-method>
+
+  <action-view name="action-project-task-dashlet-show-history" title="History"
+    model="com.axelor.mail.db.MailMessage">
+    <view type="cards" name="mail-message-card"/>
+    <view type="form" name="mail-message-form"/>
+    <view-param name="forceEdit" value="true"/>
+    <domain>self.relatedModel = 'com.axelor.apps.project.db.ProjectTask' and self.relatedId = :id</domain>
+  </action-view>
+
+  <!-- History actions -->
 
   <search-filters name="project-task-filters"
     model="com.axelor.apps.project.db.ProjectTask" title="Project task filters">
